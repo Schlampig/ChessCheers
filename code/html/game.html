@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChessCheers - 对弈</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%99%9E%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../css/game.css?v=202610301855">
+</head>
+<body>
+    <div class="game-container" id="game-container">
+        <!-- 棋盘区域 -->
+        <div class="board-area" id="board-area">
+            <div class="board-topbar">
+                <div class="board-title">
+                    <span class="side-badge white" id="badge-white">白 · 阵营加载中</span>
+                    <span class="vs">VS</span>
+                    <span class="side-badge black" id="badge-black">黑 · 阵营加载中</span>
+                </div>
+                <div class="board-tools">
+                    <button class="icon-btn" id="sound-btn" title="音效开关">
+                        <span id="sound-icon">🔊</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="board-frame">
+                <!-- 棋盘本体（含外围坐标槽） -->
+                <div class="board-wrap">
+                    <div class="board-inner" id="board-inner">
+                        <div class="layer board-bg" id="board-bg"></div>
+                        <div class="layer mark-layer" id="mark-layer"></div>
+                        <div class="layer piece-layer" id="piece-layer"></div>
+                        <div class="layer fx-layer" id="fx-layer"></div>
+                    </div>
+                    <!-- 外围坐标 -->
+                    <div class="coord-col" id="coord-col"></div>
+                    <div class="coord-row" id="coord-row"></div>
+                </div>
+
+                <!-- 侧边栏折叠时的展开把手 -->
+                <button class="sidebar-handle" id="sidebar-handle" title="展开侧边栏">›</button>
+            </div>
+
+            <!-- AI 思考指示 -->
+            <div class="thinking" id="thinking">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="thinking-text">引擎思考中…</span>
+            </div>
+        </div>
+
+        <!-- 右侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-head">
+                <h3>棋谱记录</h3>
+                <button class="sidebar-close" id="sidebar-close" title="折叠">‹</button>
+            </div>
+            <div class="move-list" id="move-list"></div>
+            <div class="sidebar-actions">
+                <button class="action-btn" id="print-btn">打印</button>
+                <button class="action-btn danger" id="resign-btn">认输</button>
+                <a class="action-btn" id="exit-btn" href="index.html">退出</a>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 顶部提示 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 升变弹窗 -->
+    <div class="modal" id="promotion-modal">
+        <div class="modal-card">
+            <h4>兵升变：选择新棋子</h4>
+            <div class="promo-options">
+                <button class="promo-btn" data-piece="q"><span>♛</span>皇后</button>
+                <button class="promo-btn" data-piece="r"><span>♜</span>城堡</button>
+                <button class="promo-btn" data-piece="b"><span>♝</span>主教</button>
+                <button class="promo-btn" data-piece="n"><span>♞</span>骑士</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/assets.js?v=202610301855"></script>
+    <script src="../js/asset-loader.js?v=202610301855"></script>
+    <script src="../js/chess.min.js?v=202610301855"></script>
+    <script src="../js/stockfish-engine.js?v=202610301855"></script>
+    <script src="../js/game.js?v=202610301855"></script>
+</body>
+</html>

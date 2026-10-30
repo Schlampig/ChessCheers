@@ -1,0 +1,255 @@
+/* ChessCheers 结算页样式
+   按 PRD 三.4：标题 24px 粗体、小标题 16px 常规、黑色文字；按钮 80×40。
+   有结算素材时按钮横排 + 素材占页面约 75%；无素材时按钮竖排 + 灰色半透明弹窗。 */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(1100px 700px at 50% -8%, #232a4d 0%, rgba(15, 18, 32, 0) 62%),
+        linear-gradient(180deg, #12162a 0%, #0b0e1a 100%);
+    background-attachment: fixed;
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+/* ============ 弹窗容器 ============ */
+.result-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(6, 8, 16, .62);
+    backdrop-filter: blur(3px);
+}
+
+.result-content {
+    max-width: 92vw;
+    max-height: 94vh;
+    overflow-y: auto;
+    padding: 22px 24px;
+    border-radius: 14px;
+    text-align: center;
+    /* 无素材态：灰色、透明度 60%，尺寸刚好放下文字和按钮 */
+    background: rgba(240, 242, 248, .60);
+    border: 1px solid rgba(255, 255, 255, .35);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+    animation: pop .38s cubic-bezier(.2, .9, .3, 1.2);
+}
+
+@keyframes pop {
+    from { opacity: 0; transform: translateY(18px) scale(.96); }
+    to { opacity: 1; transform: none; }
+}
+
+/* ============ 文本区域 ============ */
+.result-title-section { background: transparent; }
+
+.result-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1c26;
+    letter-spacing: 1px;
+    background: transparent;
+}
+
+.result-subtitle {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #33364a;
+    background: transparent;
+}
+
+/* ============ 按钮区域 ============ */
+.result-buttons {
+    margin-top: 20px;
+    /* 无素材态：三排竖排 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.result-btn {
+    width: 80px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(60, 66, 96, .25);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .82);
+    color: #2b2f45;
+    font-size: 14px;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.result-btn:hover {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, .38);
+}
+
+/* ============ 素材区域 ============ */
+/* 结算素材同时作为整页虚化背景，营造「结算画面」氛围 */
+body::before {
+    content: "";
+    position: fixed;
+    inset: -6%;
+    background-image: var(--result-bg, none);
+    background-size: cover;
+    background-position: center;
+    filter: blur(26px) brightness(.36) saturate(1.15);
+    opacity: 0;
+    transition: opacity .7s ease;
+    z-index: 0;
+    pointer-events: none;
+}
+body.has-result-bg::before { opacity: 1; }
+
+.result-asset {
+    display: none;
+    position: relative;
+    overflow: hidden;
+    background: #0a0d18;
+}
+
+/* 图片上沿与卡片衔接的柔化过渡 */
+.result-content.with-asset .result-asset::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 34px;
+    background: linear-gradient(180deg, rgba(247, 248, 252, .55), rgba(247, 248, 252, 0));
+    pointer-events: none;
+}
+
+.result-asset-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    /* 素材比例 1.70~1.85，与 16:9 接近，cover 只裁掉极窄的左右边 */
+    object-fit: cover;
+    object-position: center;
+    opacity: 0;
+    transform: scale(1.035);
+    transition: opacity .6s ease, transform 1s cubic-bezier(.2, .8, .3, 1);
+}
+.result-asset-img.is-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 有素材态：按钮横排，素材在按钮下方铺满剩余空间（PRD 三.4） */
+.result-content.with-asset {
+    background: rgba(247, 248, 252, .95);
+    width: min(94vw, 1080px);
+    max-width: 1080px;
+    max-height: 94vh;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, .45);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, .55);
+}
+
+/* 顶部结局色条：一眼区分胜/负/和 */
+.result-content.with-asset::before {
+    content: "";
+    flex: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent, #667eea), transparent);
+}
+.result-content[data-outcome="win"] { --accent: #f2c66a; }
+.result-content[data-outcome="lose"] { --accent: #8a93b8; }
+.result-content[data-outcome="draw"] { --accent: #9aa4c4; }
+.result-content.with-asset .result-title-section {
+    padding: 22px 26px 0;
+    flex: 0 0 auto;
+}
+.result-content.with-asset .result-buttons {
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: center;
+    gap: 14px;
+    padding: 16px 26px 18px;
+    margin-top: 0;
+}
+.result-content.with-asset .result-asset {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+    /* 素材均为 16:9 横图，按此比例铺开，避免被裁切 */
+    aspect-ratio: 16 / 9;
+    max-height: 72vh;
+}
+
+/* ============ 结局配色 ============ */
+.result-content[data-outcome="win"] .result-title { color: #a8760c; }
+.result-content[data-outcome="lose"] .result-title { color: #47506e; }
+.result-content[data-outcome="draw"] .result-title { color: #47506e; }
+
+.result-content[data-outcome="win"].with-asset {
+    border-color: rgba(242, 198, 106, .75);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, .55),
+                0 0 0 2px rgba(242, 198, 106, .45),
+                0 0 48px rgba(242, 198, 106, .30);
+}
+.result-content[data-outcome="win"] .result-title {
+    text-shadow: 0 0 18px rgba(242, 198, 106, .55);
+}
+.result-content[data-outcome="lose"].with-asset {
+    border-color: rgba(138, 147, 184, .55);
+}
+
+/* ============ Toast ============ */
+.toast {
+    position: fixed;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 11px 22px;
+    border-radius: 999px;
+    background: rgba(15, 18, 32, .95);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #e8ebf5;
+    font-size: 14px;
+    z-index: 400;
+    white-space: nowrap;
+    transition: top .32s cubic-bezier(.2, .9, .3, 1.2);
+}
+.toast.show { top: 22px; }
+
+/* ============ 响应式 ============ */
+@media (max-width: 620px) {
+    .result-title { font-size: 20px; }
+    .result-subtitle { font-size: 14px; }
+    .result-content.with-asset { width: 94vw; border-radius: 16px; }
+    .result-content.with-asset .result-title-section { padding: 18px 18px 0; }
+    .result-content.with-asset .result-buttons { padding: 14px 18px 16px; gap: 10px; }
+    /* 竖屏下按比例撑高，让立绘更醒目 */
+    .result-content.with-asset .result-asset {
+        aspect-ratio: auto;
+        height: min(44vh, 400px);
+        max-height: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

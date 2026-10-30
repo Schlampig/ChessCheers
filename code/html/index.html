@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessCheers - 定义你的阵营</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%99%9E%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../css/index.css?v=202610301855">
+</head>
+<body>
+    <!-- 抬头区 -->
+    <header class="hero">
+        <img class="hero-logo" data-brand-logo alt="ChessCheers" aria-hidden="true">
+        <h1 class="hero-title" id="main-title">ChessCheers</h1>
+        <p class="hero-subtitle">定义、选择并率领你的阵营展开国际象棋冒险之旅！</p>
+    </header>
+
+    <!-- 顶部菜单栏 -->
+    <nav class="top-nav">
+        <a href="#" class="nav-item" id="nav-play">来一局</a>
+        <a href="about.html" class="nav-item">了解更多</a>
+        <a href="https://github.com/Schlampig" class="nav-item" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+
+    <!-- 配置区域 -->
+    <main class="config-section">
+        <!-- 选择阵营 -->
+        <section class="card">
+            <div class="card-head">
+                <span class="card-index">01</span>
+                <h2 class="card-label">选择阵营</h2>
+            </div>
+            <div class="faction-grid">
+                <div class="faction-pick side-white">
+                    <div class="faction-flag">
+                        <span class="flag-dot"></span><span class="flag-text">白方</span>
+                    </div>
+                    <select class="config-select" id="white-faction"></select>
+                </div>
+                <div class="faction-pick side-black">
+                    <div class="faction-flag">
+                        <span class="flag-dot"></span><span class="flag-text">黑方</span>
+                    </div>
+                    <select class="config-select" id="black-faction"></select>
+                </div>
+            </div>
+            <div class="faction-intro" id="faction-intro">
+                <p class="config-desc">选择阵营后，这里会展示它的背景故事。</p>
+            </div>
+        </section>
+
+        <!-- 选择棋盘 -->
+        <section class="card">
+            <div class="card-head">
+                <span class="card-index">02</span>
+                <h2 class="card-label">选择棋盘</h2>
+            </div>
+            <select class="config-select" id="board-select"></select>
+            <div class="board-preview-wrap">
+                <div class="board-preview" id="board-preview"></div>
+                <p class="config-desc" id="board-desc"></p>
+            </div>
+        </section>
+
+        <!-- 对局模式 -->
+        <section class="card">
+            <div class="card-head">
+                <span class="card-index">03</span>
+                <h2 class="card-label">对局模式</h2>
+            </div>
+            <select class="config-select" id="game-mode">
+                <option value="pve" selected>人 vs 机</option>
+                <option value="pvp">人 vs 人</option>
+            </select>
+            <p class="config-desc" id="game-mode-desc">与算法展开较量！</p>
+
+            <!-- 执棋颜色（仅人 vs 机显示） -->
+            <div class="sub-field" id="color-config-item">
+                <label class="sub-label">执棋颜色</label>
+                <select class="config-select" id="player-color">
+                    <option value="random" selected>随机，无所畏惧</option>
+                    <option value="white">执白，抢占先机</option>
+                    <option value="black">执黑，后发积势</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- 对弈难度 -->
+        <section class="card" id="elo-config-item">
+            <div class="card-head">
+                <span class="card-index">04</span>
+                <h2 class="card-label">对弈难度 <span class="label-hint">ELO 计分制</span></h2>
+            </div>
+            <select class="config-select" id="elo-difficulty">
+                <option value="500">500分以下：初生牛犊</option>
+                <option value="600" selected>600-1000：灵机一动</option>
+                <option value="1100">1100-1500：激流勇进</option>
+                <option value="1600">1600-2000：福至心灵</option>
+                <option value="2100">2100-2500：行云流水</option>
+                <option value="2600">2600-3000：随心所欲</option>
+                <option value="3000">3000分以上：返璞归真</option>
+            </select>
+            <div class="elo-meter" id="elo-meter">
+                <span class="elo-bar"></span><span class="elo-bar"></span><span class="elo-bar"></span>
+                <span class="elo-bar"></span><span class="elo-bar"></span><span class="elo-bar"></span>
+                <span class="elo-bar"></span>
+            </div>
+            <p class="config-desc" id="elo-desc"></p>
+        </section>
+
+        <!-- 开始 -->
+        <button class="start-btn" id="start-btn">
+            <span class="start-text">开始对局</span>
+            <span class="start-arrow">→</span>
+        </button>
+    </main>
+
+    <footer class="site-foot">
+        <span>ChessCheers · 开源网页版国际象棋</span>
+        <span class="foot-sep">·</span>
+        <span>规则 Chess.js · 引擎 Stockfish</span>
+    </footer>
+
+    <!-- 返回顶部 -->
+    <button class="back-to-top" id="back-to-top" title="返回顶部">↑</button>
+
+    <!-- 顶部提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script src="../js/assets.js?v=202610301855"></script>
+    <script src="../js/asset-loader.js?v=202610301855"></script>
+    <script src="../js/index.js?v=202610301855"></script>
+</body>
+</html>
