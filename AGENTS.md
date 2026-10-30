@@ -9,7 +9,7 @@ This file provides guidance to agent（LLM） when working with code in this rep
 ## 核心技术栈
 - 前端：HTML5, CSS3, JavaScript (ES5标准语法，不使用ES6特性)
 - 国际象棋走棋规则：Chess.js（code/js/chess.min.js，注意：该版本不包含board()方法，需使用get(square)代替）
-- 国际象棋计算引擎：Stockfish WASM（js/stockfish.wasm.js + js/stockfish.wasm）
+- 国际象棋计算引擎：Stockfish WASM（code/js/stockfish.wasm.js + code/js/stockfish.wasm）
 - 版本控制：Git
 - 部署：GitHub Pages（github.io）
 - 响应式布局和触屏事件兼容
