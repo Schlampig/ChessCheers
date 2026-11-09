@@ -61,7 +61,7 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，支持**人机对
 https://schlampig.github.io/ChessCheers/
 ```
 
-> 在线版本尚未发布时，请使用下面的本地启动方式。
+> 首次打开会稍微慢一点（素材与引擎要下载，之后浏览器会缓存）。
 
 ### 方式二：本地启动
 
@@ -86,11 +86,25 @@ macOS 也可直接双击 `tools/serve.command`。
 
 ## 使用自己的素材
 
-**棋盘**：把 1:1 的 `png`/`jpg`/`jpeg` 丢进 `data/chessboard/`，文件名即显示名。
+**棋盘**：把 1:1 的 `png`/`jpg`/`jpeg`/`webp` 丢进 `data/chessboard/`，文件名即显示名。
 
-**阵营**：在 `data/chesspiece/` 下新建文件夹，内含 `King`、`Queen`、`Bishop`、`Knight`、`Rook`、`Pawn` 六个子目录，每个目录放 `选中` / `落子` / `被吃` 三种素材（webm/gif/png/jpg，语音可选）。
+**阵营**：在 `data/chesspiece/` 下新建文件夹，内含 `King`、`Queen`、`Bishop`、`Knight`、`Rook`、`Pawn` 六个子目录，每个目录放 `选中` / `落子` / `被吃` 三种素材（webm/gif/png/jpg/webp，语音可选）。
 
 **重启服务即生效**。不合规的素材不会出现在网页选项里，终端与首页都会提示原因。
+
+### 建议顺手瘦身
+
+网页版的瓶颈通常在素材体积，而不是代码。仓库自带两个可选工具：
+
+```bash
+python3 tools/optimize-assets.py   # 棋盘/结算图转 webp、语音转 m4a（需 Pillow）
+node tools/make-posters.js         # 生成棋子静止态预览图（需 Chrome）
+```
+
+- **棋盘**建议长边 ≤ 1024、**结算图** ≤ 1600；`optimize-assets.py` 会同时生成首页用的 `-mini` 缩略图
+- `make-posters.js` 会把每个棋子的 `选中.webm` 首帧截成 `预览.webp`（几 KB）。
+  有了它，棋盘上 32 个棋子静止时只加载图片，视频只在真正播动画时才下载；
+  没有预览图也能跑，只是首屏要拉几十 MB 视频，弱网下体验很差
 
 完整规范（目录结构、状态映射、结算素材、logo）见 [使用指南 · 素材规范](doc/UserGuide.md#dev-assets)。
 
@@ -147,7 +161,12 @@ ChessCheers/
 │   ├── chesslogo/          # 项目 logo
 │   └── others/             # 文档配图
 ├── doc/                    # 文档（PRD / 使用指南 / 英文 README / intro）
-└── tools/                  # 本地服务、素材扫描、版本号工具
+└── tools/                  # 本地服务与素材工具
+    ├── serve.js            # 启动即扫描素材的本地服务器
+    ├── scan-assets.js      # 素材清单与规范检查
+    ├── optimize-assets.py  # 图片转 webp、语音转 m4a（可选）
+    ├── make-posters.js     # 生成棋子静止态预览图（可选）
+    └── bump-version.js     # 刷新静态资源版本号
 ```
 
 更细的模块划分与「哪里能改、哪里别动」见 [使用指南 · 第二部分](doc/UserGuide.md#part-dev)。

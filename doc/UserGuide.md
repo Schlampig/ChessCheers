@@ -312,6 +312,8 @@ ChessCheers/
     ├── serve.js                # 本地服务器（启动时自动扫描素材）
     ├── serve.command           # macOS 双击启动
     ├── scan-assets.js          # 素材扫描与规范检查，生成 assets.js
+    ├── optimize-assets.py      # 图片转 webp、语音转 m4a（可选）
+    ├── make-posters.js         # 生成棋子静止态预览图（可选）
     └── bump-version.js         # 批量更新静态资源版本号
 ```
 
@@ -389,21 +391,24 @@ URL 只带 `outcome` 等少量参数作为兜底。**改任何一方都要同步
 
 #### 棋盘
 
-- 格式：`png` / `jpg` / `jpeg`
+- 格式：`png` / `jpg` / `jpeg` / `webp`
 - 长宽比：**严格 1:1**（容差 1%），否则会被判定不合格并跳过
 - 命名：无限制，文件名（去扩展名）即下拉选项名
+- 建议长边 ≤ 1024。若同时提供 `<名字>-mini.webp`，首页预览会用它（几十 KB），
+  下拉框旁边不会再拉原图
 
 #### 阵营
 
 ```
 data/chesspiece/<阵营名>/
 ├── King/  Queen/  Bishop/  Knight/  Rook/  Pawn/    # 六个都必须存在
-│   ├── 选中.webm    # 或 .gif / .png / .jpg / .jpeg
+│   ├── 选中.webm    # 或 .gif / .png / .jpg / .jpeg / .webp
 │   ├── 选中.wav     # 可选：.wav / .m4a / .mp3 / .ogg
 │   ├── 落子.webm
 │   ├── 落子.wav
 │   ├── 被吃.webm
-│   └── 被吃.wav
+│   ├── 被吃.wav
+│   └── 预览.webp    # 可选：静止态首帧，由 tools/make-posters.js 生成
 ├── 结算动画/                                        # 可选
 │   ├── win/     赢棋.png + 赢棋.wav
 │   ├── lose/    输棋.png + 输棋.wav
@@ -421,6 +426,19 @@ data/chesspiece/<阵营名>/
 3. 数量不足时循环复用
 
 写代码时如果新增状态，要同时改 `STATES` 与 `asset-loader` 里的 `STATE_LABELS`。
+
+#### 为什么要有「预览.webp」
+
+棋子静止时，如果直接用 `<video preload="auto">` 展示首帧，棋盘上 32 个棋子会同时
+下载几十 MB 视频——弱网下根本进不了对局。`tools/make-posters.js` 把每个棋子的
+`选中.webm` 首帧截成 192px 的 `预览.webp`（含透明通道，单个 4~7KB），
+页面静止态只加载它，视频只在真正播动画时才按需下载。
+
+没有预览图也能正常运行，只是会退回视频首帧方案。**新增阵营后建议补跑一次**：
+
+```bash
+node tools/make-posters.js
+```
 
 #### 结算素材
 
