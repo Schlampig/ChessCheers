@@ -53,6 +53,9 @@
     var onBestMove = null;
     var onReadyCb = null;
     var onErrorCb = null;
+    // 引擎就绪前收到的分析请求。引擎是 640KB 的 wasm，弱网下要十几秒才可用，
+    // 这期间玩家很可能已经走了一步——请求先排队，就绪后自动补发，避免 AI 漏走。
+    var pendingAnalyses = [];
 
     function send(cmd) {
         if (!worker) return;
@@ -90,6 +93,7 @@
             ready = true;
             send('ucinewgame');
             console.log('[StockfishEngine] 引擎就绪');
+            flushPendingAnalyses();
             if (onReadyCb) onReadyCb();
             return;
         }
@@ -168,6 +172,14 @@
         return true;
     }
 
+    // 引擎就绪后补发排队的分析。只保留最后一次：局面已经变了，更早的请求没有意义
+    function flushPendingAnalyses() {
+        if (!pendingAnalyses.length) return;
+        var last = pendingAnalyses[pendingAnalyses.length - 1];
+        pendingAnalyses = [];
+        analyze(last.fen, last.elo, last.cb);
+    }
+
     /**
      * 请求最佳走法
      * @param {string} fen 当前局面
@@ -180,9 +192,10 @@
             return false;
         }
         if (!ready) {
-            console.warn('[StockfishEngine] 引擎未就绪，忽略本次分析');
-            if (callback) callback(null);
-            return false;
+            // 引擎还在下载/初始化：排队等待，就绪后自动补发
+            console.log('[StockfishEngine] 引擎未就绪，本次分析已排队');
+            pendingAnalyses.push({ fen: fen, elo: elo, cb: callback });
+            return true;
         }
 
         var level = levelOf(elo);
@@ -209,6 +222,7 @@
 
     function destroy() {
         if (pendingTimer) clearTimeout(pendingTimer);
+        pendingAnalyses = [];
         if (worker) {
             try { worker.terminate(); } catch (e) {}
         }
