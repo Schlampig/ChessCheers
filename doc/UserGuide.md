@@ -45,7 +45,7 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，有两种玩法�
 - **人 vs 机**：你和 Stockfish 引擎对弈，难度可调
 - **人 vs 人**：同一台设备上黑白轮流走，适合摆棋和练习
 
-**它首先是一个同人游戏。** 棋子立绘与语音来自手机游戏《明日方舟》，作者出于对该游戏与国际象棋的喜爱而制作，与官方无任何关联。项目底层基于国际象棋引擎 [Stockfish](https://stockfishchess.org/) 完成算棋，用 Chess.js 管理行棋规则。
+**它首先是一个同人游戏。** 棋子立绘与语音来自手机游戏[《明日方舟》](https://ak.hypergryph.com/)，作者出于对该游戏与国际象棋的喜爱而制作，与官方无任何关联。项目底层基于国际象棋引擎 [Stockfish](https://stockfishchess.org/) 完成算棋，用 Chess.js 管理行棋规则。
 
 **其次它是一个通用框架。** 棋子和棋盘全部来自 `data/` 目录下的素材文件——理论上只要按规范替换图片、动画与音频，就能让任何自定义角色与棋盘出现在游戏里，换成你自己的 IP、原创角色或纯几何棋子都可以。
 
@@ -66,6 +66,9 @@ node tools/serve.js
 ```
 
 浏览器会自动打开 <http://127.0.0.1:8766/>。
+
+> 当前稳定版本为 [v1.0.0](https://github.com/Schlampig/ChessCheers/releases/tag/v1.0.0)。
+> 想固定版本可 `git checkout v1.0.0`；不用 git 时，从 Releases 页下载源码包解压即可运行。
 
 > ⚠️ **不要直接双击 `code/html/index.html`**。
 > `file://` 协议下浏览器会拦截 Web Worker，AI 引擎起不来，你将只能看到棋盘而不能和机器对弈。

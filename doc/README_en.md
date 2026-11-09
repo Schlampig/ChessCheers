@@ -25,7 +25,7 @@
 
 ChessCheers is a chess application that runs in the browser, supporting **human vs AI** and **two players on one device**.
 
-**First and foremost, it is a fan game.** The characters and voice lines on the board come from the mobile game *Arknights*. The author built it out of a love for that game and for chess; it is not affiliated with the official rights holders in any way. Under the hood, move calculation is powered by the chess engine [Stockfish](https://stockfishchess.org/), and move validation is handled by Chess.js.
+**First and foremost, it is a fan game.** The characters and voice lines on the board come from the mobile game [*Arknights*](https://ak.hypergryph.com/). The author built it out of a love for that game and for chess; it is not affiliated with the official rights holders in any way. Under the hood, move calculation is powered by the chess engine [Stockfish](https://stockfishchess.org/), and move validation is handled by Chess.js.
 
 **Second, it is a generic framework.** Pieces and boards all come from asset files under `data/`. In principle, as long as you follow the specification and replace the images, animations and audio, you can put any custom characters and boards into the game — your own IP, original characters, or plain geometric pieces.
 
@@ -67,6 +67,8 @@ cd ChessCheers
 
 node tools/serve.js          # defaults to http://127.0.0.1:8766/
 ```
+
+The current stable version is [v1.0.0](https://github.com/Schlampig/ChessCheers/releases/tag/v1.0.0). To pin it, run `git checkout v1.0.0` after cloning; without git, download the source archive from the Releases page and run it directly.
 
 On start-up it scans `data/`, validates the assets and regenerates the manifest; the terminal prints whether each faction and board passed.
 
