@@ -55,13 +55,9 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，有两种玩法�
 
 ### 怎么打开
 
-**方式一：在线访问**
+> **推荐本地运行**。网页版的素材与 AI 引擎全靠网络下载，网速不稳时体验会明显打折，详见方式二。
 
-打开项目部署地址（形如 `https://<用户名>.github.io/ChessCheers/`）即可，无需安装任何东西。
-
-> 本项目尚未正式发布在线版本时，请使用方式二。
-
-**方式二：本地启动**
+**方式一：本地启动（推荐）**
 
 ```bash
 git clone https://github.com/Schlampig/ChessCheers.git
@@ -75,6 +71,14 @@ node tools/serve.js
 > `file://` 协议下浏览器会拦截 Web Worker，AI 引擎起不来，你将只能看到棋盘而不能和机器对弈。
 > 必须通过上面的 HTTP 方式访问。
 
+**方式二：在线访问**
+
+打开项目部署地址（形如 `https://<用户名>.github.io/ChessCheers/`）即可，无需安装任何东西。
+
+> ⚠️ 网页版需要**网速流畅**才能畅玩：首次打开要下载棋盘、棋子预览图与 AI 引擎，
+> 网络较差时可能要等十几秒，棋子动画会滞后，甚至**听得到语音却看不到动画**。
+> 想稳定对弈请用方式一。
+
 <a id="common-concepts"></a>
 
 ### 三个核心概念
@@ -82,7 +86,7 @@ node tools/serve.js
 | 概念 | 是什么 | 在哪里 |
 |---|---|---|
 | **阵营** | 一套棋子皮肤：6 种棋子 × 3 种状态的动画与语音，外加胜负结算插画 | `data/chesspiece/<阵营名>/` |
-| **棋盘** | 一张正方形（严格 1:1）的图片 | `data/chessboard/<名字>.png` |
+| **棋盘** | 一张正方形（严格 1:1）的图片 | `data/chessboard/<名字>.webp` |
 | **棋谱** | 按国际象棋标准记谱法记录的走法，如 `1. e4 e5 2. Nf3` | 对弈页右侧边栏 |
 
 ---
@@ -474,6 +478,23 @@ node tools/bump-version.js
 ```bash
 node tools/scan-assets.js    # 手动扫描（用 serve.js 时启动会自动跑）
 ```
+
+### 素材瘦身（发布前必做）
+
+网页版的瓶颈几乎总是素材体积而不是代码：原始素材动辄几十 MB，弱网下首屏根本打不开。
+新增或替换素材后，按顺序跑：
+
+```bash
+python3 tools/optimize-assets.py   # 棋盘/结算图转 webp、语音转 m4a（需 Pillow）
+node tools/make-posters.js         # 从「选中.webm」截首帧生成 预览.webp（需 Chrome）
+node tools/scan-assets.js          # 重新生成清单
+node tools/bump-version.js         # 刷新资源版本号
+```
+
+- 棋盘建议长边 ≤ 1024、结算图 ≤ 1600；`optimize-assets.py` 会顺带生成首页用的 `-mini` 缩略图
+- `预览.webp` 是**棋子静止态**用的首帧图（每个几 KB）。没有它，棋盘上 32 个棋子会各自
+  拉一段完整视频，首屏从几百 KB 变成几十 MB——这是网页版卡顿最常见的原因
+- 原始文件建议先备份（仓库里默认放在 `.assets-original/`，已被 gitignore）
 
 <a id="dev-test"></a>
 

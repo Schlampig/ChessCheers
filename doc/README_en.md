@@ -53,17 +53,11 @@ Want to understand the gameplay and page structure first? See [User Guide · Com
 
 ## Quick start
 
-### Option 1: Online
+> **Running locally is recommended.** The web version is hosted on GitHub Pages, so the assets and
+> the AI engine (about 1 MB) are fetched over the network; access speed varies a lot. For a stable
+> experience, use Option 1.
 
-Open the deployment URL — nothing to install:
-
-```
-https://schlampig.github.io/ChessCheers/
-```
-
-> If the online version has not been published yet, use the local option below.
-
-### Option 2: Run locally
+### Option 1: Run locally (recommended)
 
 Browsers block Web Workers under `file://` (the AI will not work), so **you must access it over HTTP**.
 
@@ -80,17 +74,46 @@ On macOS you can also double-click `tools/serve.command`.
 
 > No Node.js? Install it, or use `python3 -m http.server 8766` (run `node tools/scan-assets.js` manually first).
 
+### Option 2: Online
+
+If you would rather not install anything, open:
+
+```
+https://schlampig.github.io/ChessCheers/
+```
+
+> ⚠️ The web version needs a **decent connection** to be enjoyable: the first visit downloads the
+> board, the piece posters and the AI engine. On a slow link it may take ten-plus seconds, animations
+> lag behind, and you may even hear the voice line without seeing the animation. If that happens,
+> switch to Option 1.
+
 More detail in [User Guide · How to open it](UserGuide_en.md#common-open).
 
 <a id="assets"></a>
 
 ## Using your own assets
 
-**Boards**: drop a 1:1 `png`/`jpg`/`jpeg` into `data/chessboard/`. The filename becomes the display name.
+**Boards**: drop a 1:1 `png`/`jpg`/`jpeg`/`webp` into `data/chessboard/`. The filename becomes the display name.
 
-**Factions**: create a folder under `data/chesspiece/` containing six subfolders — `King`, `Queen`, `Bishop`, `Knight`, `Rook`, `Pawn` — each with `选中` / `落子` / `被吃` assets (webm/gif/png/jpg; audio optional).
+**Factions**: create a folder under `data/chesspiece/` containing six subfolders — `King`, `Queen`, `Bishop`, `Knight`, `Rook`, `Pawn` — each with `选中` / `落子` / `被吃` assets (webm/gif/png/jpg/webp; audio optional).
 
 **Restart the server and it takes effect.** Invalid assets never appear in the dropdown; the terminal and the home page explain why.
+
+### Slimming your assets
+
+On the web, the bottleneck is almost always asset size, not code. Two optional tools ship with the repo:
+
+```bash
+python3 tools/optimize-assets.py   # boards/endings → webp, voice → m4a (needs Pillow)
+node tools/make-posters.js         # generate idle first-frame posters (needs Chrome)
+```
+
+- Keep **boards** ≤ 1024 px and **ending artwork** ≤ 1600 px on the long edge; `optimize-assets.py` also
+  emits a `-mini` thumbnail for the home page preview
+- `make-posters.js` grabs the first frame of every `选中.webm` into `预览.webp` (a few KB each).
+  With posters, the 32 idle pieces load as small images and videos are fetched only when an animation
+  actually plays; without them the site still works, but the first load pulls tens of MB of video and
+  is painful on a slow link
 
 Full specification (folder layout, state mapping, ending artwork, logo) in [User Guide · Asset specification](UserGuide_en.md#dev-assets).
 
@@ -147,7 +170,12 @@ ChessCheers/
 │   ├── chesslogo/          # project logo
 │   └── others/             # documentation images
 ├── doc/                    # docs (PRD / user guides / English README / intro)
-└── tools/                  # local server, asset scanner, version bumper
+└── tools/                  # local server and asset tooling
+    ├── serve.js            # local server that scans assets on start-up
+    ├── scan-assets.js      # asset manifest and validation
+    ├── optimize-assets.py  # images → webp, voice → m4a (optional)
+    ├── make-posters.js     # idle first-frame posters (optional)
+    └── bump-version.js     # refresh static asset version query
 ```
 
 For a finer breakdown and "what you can change vs leave alone", see [User Guide · Part 2](UserGuide_en.md#part-dev).
@@ -178,7 +206,7 @@ You are welcome to cite this project, or to create other works based on it. Plea
 ## Credits
 
 - [Arknights](https://ak.hypergryph.com/)
-- [Arknights PRTS (Preliminary RodesIsland Terminal System)](https://prts.wiki/index.php?title=%E5%B9%B2%E5%91%98%E4%B8%80%E8%A7%88&oldid=439147)
+- [Arknights PRTS (Preliminary RodesIsland Terminal System)](https://prts.wiki/w/%CA%D7%D2%B3)
 - [Stockfish (Strong open-source chess engine)](https://stockfishchess.org/)
 - [Lichess](https://lichess.org/)
 

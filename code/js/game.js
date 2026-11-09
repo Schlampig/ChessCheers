@@ -22,7 +22,7 @@
     var DRAG_THRESHOLD = 4;          // 拖拽判定阈值（像素）
     var STORAGE_KEY = 'chesscheers_last_game';
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202611092359';
+    var BUILD = '202611100036';
 
     // ---------- 运行时状态 ----------
     var state = {
@@ -63,6 +63,14 @@
 
     function colorName(color) {
         return color === 'w' ? '白' : '黑';
+    }
+
+    // 预取双方阵营的语音：弱网下首次播放要等一个来回，
+    // 提前拉下来才能让提示音跟上落子/吃子动作
+    function preloadSounds() {
+        if (!window.AssetLoader.preloadPieceSounds) return;
+        window.AssetLoader.preloadPieceSounds(state.whiteCamp, 0);
+        window.AssetLoader.preloadPieceSounds(state.blackCamp, 900);
     }
 
     // ==================== 初始化 ====================
@@ -355,11 +363,8 @@
         var camp = campOf(piece.color);
         var src = window.AssetLoader.getPieceAssetPath(camp, piece.type, 'select', false);
         var visual = el.querySelector('.piece-visual');
-        if (src && visual) {
-            var base = visual.querySelector('.piece-video:not(.piece-video-fx)');
-            if (base) base.style.opacity = '0';
-            window.AssetLoader.playVideoOnce(visual, src, true);
-        }
+        // 选中动画叠加在静态形象之上：视频没到也仍能看到棋子
+        if (src && visual) window.AssetLoader.playVideoOnce(visual, src, true);
         window.AssetLoader.playPieceSound(camp, piece.type, 'select');
         return true;
     }
@@ -588,6 +593,10 @@
 
     // 落子/被吃/易位同时编排：吃子方层级在上、被吃方压在下方，
     // 避免两段动画互相遮挡，也让「谁吃谁」一眼可辨。
+    //
+    // 不隐藏静态棋子：动画视频要按需下载，弱网下往往赶不上（最长等 1.2 秒）。
+    // 若先把静态形象藏起来，就会出现「听到语音却看不到棋子」的错位；
+    // 保留静态形象后，视频到了就叠在上面播，没到也不影响观感与同步。
     function playImpactFx(ctx, result) {
         var pending = 1;
         var gen = ++fxGen;
@@ -601,13 +610,11 @@
             restoreVisuals();
         }
 
-        hideVisual(pieceElAt(result.to));
         if (ctx.captured) {
             pending++;
             playFx(ctx.capSquare, ctx.captured.camp, ctx.captured.type, 'capture', 1, done);
         }
         if (ctx.rook) {
-            hideVisual(pieceElAt(ctx.rook.to));
             pending++;
             playFx(ctx.rook.to, campOf(result.color), 'r', 'drop', 3, done);
         }
@@ -664,12 +671,11 @@
     }
 
     // 升变抵达：播放新棋子选中动画一遍后归位（PRD 四.3 升变条）
-    // 阵营与棋子类型取自走法结果，与静态棋子保持一致
+    // 阵营与棋子类型取自走法结果，与静态棋子保持一致；同样不隐藏静态棋子
     function playPromotionArrival(result) {
         var sq = result.to;
         var el = pieceElAt(sq);
         if (!el) { evaluateNext(); return; }
-        hideVisual(el);
         var gen = fxGen;
         playFx(sq, campOf(result.color), result.promotion || 'q', 'select', 3, function () {
             if (gen !== fxGen) return;
@@ -1074,6 +1080,7 @@
     function initEngine() {
         window.StockfishEngine.init({
             onReady: function () {
+                preloadSounds();
                 if (state.mode === 'pve') maybeTriggerAI();
             },
             onError: function (msg) {
@@ -1098,6 +1105,8 @@
 
         window.AssetLoader.warmUp(state.whiteCamp);
         window.AssetLoader.warmUp(state.blackCamp);
+        // 人人对战不加载引擎，网络空着，稍等片刻就预取语音
+        if (state.mode !== 'pve') setTimeout(preloadSounds, 2000);
 
         renderBoardBg();
         renderCoords();

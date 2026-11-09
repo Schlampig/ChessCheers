@@ -53,17 +53,10 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，支持**人机对
 
 ## 快速开始
 
-### 方式一：在线访问
+> **推荐本地运行**。网页版架在 GitHub Pages 上，素材与 AI 引擎（约 1MB）全靠网络下载，
+> 国内访问速度波动较大；想稳定体验请用方式一。
 
-打开项目部署地址即可，无需安装任何东西：
-
-```
-https://schlampig.github.io/ChessCheers/
-```
-
-> 首次打开会稍微慢一点（素材与引擎要下载，之后浏览器会缓存）。
-
-### 方式二：本地启动
+### 方式一：本地启动（推荐）
 
 浏览器会拦截 `file://` 下的 Web Worker（AI 将无法工作），**必须通过 HTTP 访问**。
 
@@ -79,6 +72,18 @@ node tools/serve.js          # 默认 http://127.0.0.1:8766/
 macOS 也可直接双击 `tools/serve.command`。
 
 > 没有 Node.js？装一个，或改用 `python3 -m http.server 8766`（需先手动执行 `node tools/scan-assets.js`）。
+
+### 方式二：在线访问
+
+不想安装任何东西时，直接打开：
+
+```
+https://schlampig.github.io/ChessCheers/
+```
+
+> ⚠️ 网页版需要**网速流畅**才能玩得舒服：首次打开要下载棋盘、棋子预览图与 AI 引擎，
+> 网络较差时可能要等十几秒，棋子动画也会明显滞后，甚至听得到语音却看不到动画。
+> 遇到这种情况请改用方式一。
 
 更细的说明见 [使用指南 · 怎么打开](doc/UserGuide.md#common-open)。
 
@@ -197,7 +202,7 @@ ChessCheers/
 ## 致谢
 
 - [明日方舟](https://ak.hypergryph.com/)
-- [明日方舟 PRTS（Preliminary RodesIsland Terminal System）](https://prts.wiki/index.php?title=%E5%B9%B2%E5%91%98%E4%B8%80%E8%A7%88&oldid=439147)
+- [明日方舟 PRTS（Preliminary RodesIsland Terminal System）](https://prts.wiki/w/%CA%D7%D2%B3)
 - [Stockfish（Strong open-source chess engine）](https://stockfishchess.org/)
 - [Lichess](https://lichess.org/)
 

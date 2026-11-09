@@ -55,13 +55,10 @@ ChessCheers is a chess application that runs in the browser, with two modes:
 
 ### How to open it
 
-**Option 1: Online**
+> **Running locally is recommended.** The web version downloads both the assets and the AI engine;
+> on an unstable connection the experience suffers a lot — see Option 2.
 
-Open the deployment URL (of the form `https://<username>.github.io/ChessCheers/`). Nothing to install.
-
-> If this project has not been published online yet, use Option 2.
-
-**Option 2: Run locally**
+**Option 1: Run locally (recommended)**
 
 ```bash
 git clone https://github.com/Schlampig/ChessCheers.git
@@ -75,6 +72,15 @@ Your browser will open <http://127.0.0.1:8766/> automatically.
 > Under the `file://` protocol, browsers block Web Workers, so the AI engine cannot start — you will see the board but cannot play against the machine.
 > You must access it over HTTP as shown above.
 
+**Option 2: Online**
+
+Open the deployment URL (of the form `https://<username>.github.io/ChessCheers/`). Nothing to install.
+
+> ⚠️ The web version needs a **decent connection** to be enjoyable: the first visit downloads the
+> board, the piece posters and the AI engine. On a slow link it may take ten-plus seconds, animations
+> lag behind, and you may even hear the voice line without seeing the animation.
+> For stable play, use Option 1.
+
 <a id="common-concepts"></a>
 
 ### Three key concepts
@@ -82,7 +88,7 @@ Your browser will open <http://127.0.0.1:8766/> automatically.
 | Concept | What it is | Where |
 |---|---|---|
 | **Faction** | A piece skin: animations and voice lines for 6 piece types × 3 states, plus win/lose/draw artwork | `data/chesspiece/<faction>/` |
-| **Board** | A single square image (strictly 1:1) | `data/chessboard/<name>.png` |
+| **Board** | A single square image (strictly 1:1) | `data/chessboard/<name>.webp` |
 | **Move list** | Standard algebraic notation of the game, e.g. `1. e4 e5 2. Nf3` | Right sidebar on the game page |
 
 ---
@@ -471,6 +477,26 @@ When assets change:
 ```bash
 node tools/scan-assets.js    # manual scan (serve.js does this on start)
 ```
+
+### Slimming assets (do this before publishing)
+
+On the web, the bottleneck is almost always asset size rather than code: raw assets easily reach
+tens of MB and the first load simply never finishes on a slow link. After adding or replacing
+assets, run these in order:
+
+```bash
+python3 tools/optimize-assets.py   # boards/endings → webp, voice → m4a (needs Pillow)
+node tools/make-posters.js         # first frame of 选中.webm → 预览.webp (needs Chrome)
+node tools/scan-assets.js          # regenerate the manifest
+node tools/bump-version.js         # refresh the asset version query
+```
+
+- Keep boards ≤ 1024 px and ending artwork ≤ 1600 px on the long edge; `optimize-assets.py` also
+  emits the `-mini` thumbnail used by the home page preview
+- `预览.webp` is the **idle** first-frame image (a few KB each). Without it, the 32 pieces on the
+  board each pull a full video: the first load goes from a few hundred KB to tens of MB — the most
+  common cause of a sluggish web build
+- Back up the originals first (the repo keeps them in `.assets-original/`, which is gitignored)
 
 <a id="dev-test"></a>
 

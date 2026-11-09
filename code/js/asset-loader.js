@@ -331,21 +331,67 @@
         return img;
     }
 
+    // ==================== 音效 ====================
+    var SOUND_VOLUME = 0.9;
+    // 已创建的音效元素缓存：同一个声音复用同一个元素，配合预取可以即时起播
+    var soundCache = {};
+
+    function soundKey(campName, pieceType, state) {
+        return campName + '|' + pieceDirName(pieceType) + '|' + state;
+    }
+
+    // 预取语音：只创建元素触发下载，不播放。
+    // 弱网下首次播放要等一个来回（1~2 秒），声音就会明显晚于落子动作；
+    // 提前把文件拉下来，正式播放时才能与画面同步。
+    function preloadSound(src, key) {
+        if (!soundEnabled || !src || !key || soundCache[key]) return;
+        var audio = new Audio();
+        audio.preload = 'auto';
+        audio.volume = SOUND_VOLUME;
+        audio.src = src;
+        soundCache[key] = audio;
+    }
+
+    /**
+     * 预取某阵营的全部战斗语音（6 种棋子 × 选中/落子/被吃）
+     * @param {string} campName 阵营名
+     * @param {number} delayMs 整体延后，避免与棋盘、引擎抢带宽
+     */
+    function preloadPieceSounds(campName, delayMs) {
+        var codes = ['p', 'r', 'n', 'b', 'q', 'k'];
+        var states = ['select', 'drop', 'capture'];
+        var order = 0;
+        for (var c = 0; c < codes.length; c++) {
+            for (var s = 0; s < states.length; s++) {
+                (function (code, state, index) {
+                    setTimeout(function () {
+                        preloadSound(getPieceAssetPath(campName, code, state, true),
+                            soundKey(campName, code, state));
+                    }, (delayMs || 0) + index * 120);
+                })(codes[c], states[s], order);
+                order++;
+            }
+        }
+    }
+
     // 播放音效（不打断其他音效）
-    function playSound(src) {
+    function playSound(src, key) {
         if (!soundEnabled || !src) return;
         try {
-            var audio = new Audio(src);
-            audio.volume = 0.9;
+            var audio = key ? soundCache[key] : null;
+            if (!audio) {
+                audio = new Audio(src);
+                audio.volume = SOUND_VOLUME;
+                if (key) soundCache[key] = audio;
+            }
+            // 复用元素时从头播放，避免连续两声响成一片
+            try { audio.currentTime = 0; } catch (e) {}
             var p = audio.play();
             if (p && p.catch) {
                 p.catch(function () {
                     console.warn('[AssetLoader] 音效播放被拦截:', src);
                 });
             }
-            audio.addEventListener('ended', function () {
-                audio.src = '';
-            });
         } catch (e) {
             console.warn('[AssetLoader] 音效播放失败:', e);
         }
@@ -353,7 +399,8 @@
 
     // 按阵营+棋子+状态播放对应语音
     function playPieceSound(campName, pieceType, state) {
-        playSound(getPieceAssetPath(campName, pieceType, state, true));
+        var src = getPieceAssetPath(campName, pieceType, state, true);
+        playSound(src, soundKey(campName, pieceType, state));
     }
 
     // 预热静止态素材：有预览图就只预载图（几 KB），没有才预载视频首帧
@@ -451,6 +498,7 @@
         playVideoOnce: playVideoOnce,
         playSound: playSound,
         playPieceSound: playPieceSound,
+        preloadPieceSounds: preloadPieceSounds,
         warmUp: warmUp,
         unlockAudio: unlockAudio,
         setSoundEnabled: setSoundEnabled,
