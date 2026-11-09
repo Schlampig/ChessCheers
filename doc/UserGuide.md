@@ -1,11 +1,42 @@
 # ChessCheers 使用指南
 
+**中文** | [English](UserGuide_en.md)
+
 > 本指南分两部分：**第一部分给只想下棋的玩家**，**第二部分给想改代码、做二次开发的开发者**。
-> 前面的公共部分两边都建议读一下。
+> 开头的公共部分两边都建议读一下。
+
+## 目录
+
+- [公共部分](#common)
+  - [这是什么](#common-what)
+  - [怎么打开](#common-open)
+  - [三个核心概念](#common-concepts)
+- [第一部分：给玩家](#part-player)
+  - [页面地图](#player-map)
+  - [首页：配置你的对局](#player-index)
+  - [对弈页：怎么下棋](#player-game)
+  - [结算页](#player-result)
+  - [了解更多](#player-about)
+  - [常见问题](#player-faq)
+- [第二部分：给开发者](#part-dev)
+  - [技术栈](#dev-stack)
+  - [项目结构](#dev-layout)
+  - [代码架构与数据流](#dev-arch)
+  - [素材规范](#dev-assets)
+  - [本地开发流程](#dev-workflow)
+  - [测试](#dev-test)
+  - [发布网页版](#dev-deploy)
+  - [可以改什么 / 不要动什么](#dev-boundary)
+  - [常见坑](#dev-pitfalls)
+- [许可与声明](#license)
 
 ---
 
+<a id="common"></a>
+
 ## 公共部分
+
+<a id="common-what"></a>
 
 ### 这是什么
 
@@ -14,7 +45,13 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，有两种玩法�
 - **人 vs 机**：你和 Stockfish 引擎对弈，难度可调
 - **人 vs 人**：同一台设备上黑白轮流走，适合摆棋和练习
 
-它最大的特点是**棋子和棋盘全部来自 `data/` 目录下的素材文件**。换一套素材，整个棋局的外观、棋子动画、配音、乃至胜负结算的插画都会跟着变。
+**它首先是一个同人游戏。** 棋子立绘与语音来自手机游戏《明日方舟》，作者出于对该游戏与国际象棋的喜爱而制作，与官方无任何关联。项目底层基于国际象棋引擎 [Stockfish](https://stockfishchess.org/) 完成算棋，用 Chess.js 管理行棋规则。
+
+**其次它是一个通用框架。** 棋子和棋盘全部来自 `data/` 目录下的素材文件——理论上只要按规范替换图片、动画与音频，就能让任何自定义角色与棋盘出现在游戏里，换成你自己的 IP、原创角色或纯几何棋子都可以。
+
+> 素材的版权归属与使用限制见 [许可与声明](#license)，使用或分发前请务必阅读。
+
+<a id="common-open"></a>
 
 ### 怎么打开
 
@@ -22,10 +59,12 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，有两种玩法�
 
 打开项目部署地址（形如 `https://<用户名>.github.io/ChessCheers/`）即可，无需安装任何东西。
 
-**方式二：本地运行**
+> 本项目尚未正式发布在线版本时，请使用方式二。
+
+**方式二：本地启动**
 
 ```bash
-git clone <仓库地址>
+git clone https://github.com/Schlampig/ChessCheers.git
 cd ChessCheers
 node tools/serve.js
 ```
@@ -35,6 +74,8 @@ node tools/serve.js
 > ⚠️ **不要直接双击 `code/html/index.html`**。
 > `file://` 协议下浏览器会拦截 Web Worker，AI 引擎起不来，你将只能看到棋盘而不能和机器对弈。
 > 必须通过上面的 HTTP 方式访问。
+
+<a id="common-concepts"></a>
 
 ### 三个核心概念
 
@@ -46,9 +87,13 @@ node tools/serve.js
 
 ---
 
-# 第一部分：给玩家
+<a id="part-player"></a>
 
-## 页面地图
+## 第一部分：给玩家
+
+<a id="player-map"></a>
+
+### 页面地图
 
 ```
         ┌──────────────┐
@@ -68,23 +113,25 @@ node tools/serve.js
         └──────────────┘
 ```
 
-## 首页：配置你的对局
+<a id="player-index"></a>
+
+### 首页：配置你的对局
 
 从上到下四张卡片，全部用下拉菜单选择。
 
-### ① 选择阵营
+#### ① 选择阵营
 
 - 左边是**白方**的阵营，右边是**黑方**的阵营，各有一个「随机」选项
 - 选好之后，下方会展开该阵营的文字介绍（如果素材作者写了 `阵营介绍.md`）
 - 阵营数不足 2 个时，这里会显示 `Error：阵营人不齐！`，无法开局
 
-### ② 选择棋盘
+#### ② 选择棋盘
 
 - 列出 `data/chessboard/` 下所有**合格**（严格 1:1）的棋盘，默认选中「标准」
 - 下方显示预览图与像素尺寸
 - 如果有图片因为比例不对被跳过，会用黄字告诉你哪张、为什么
 
-### ③ 对局模式
+#### ③ 对局模式
 
 - **人 vs 机**：与算法较量，会多出「执棋颜色」选项
   - 执白：你先走
@@ -92,7 +139,7 @@ node tools/serve.js
   - 随机：开局时决定
 - **人 vs 人**：你自己操控黑白双方，此时没有难度可选
 
-### ④ 对弈难度
+#### ④ 对弈难度
 
 只在「人 vs 机」时出现，按 ELO 积分分七档，默认「600-1000：灵机一动」。
 
@@ -108,15 +155,17 @@ node tools/serve.js
 
 配置下方的强度条会随选择变化。
 
-### 开始
+#### 开始
 
 点最下方的「开始对局」。也可以在顶部菜单点「来一局」，效果相同。
 
 如果配置有问题（比如素材不够），顶部会弹出提示，不会跳转。
 
-## 对弈页：怎么下棋
+<a id="player-game"></a>
 
-### 走子
+### 对弈页：怎么下棋
+
+#### 走子
 
 两种方式都支持：
 
@@ -127,11 +176,11 @@ node tools/serve.js
 
 > 任何棋子都能被选中观察（会播放选中动画），哪怕当前不能移动——方便你欣赏素材。
 
-### 特殊走法
+#### 特殊走法
 
 王车易位、吃过路兵、兵升变都已实现。升变时会弹出选择框，选皇后/城堡/骑士/主教。
 
-### 右侧棋谱栏
+#### 右侧棋谱栏
 
 棋盘右侧有个 `›` 箭头，点开是棋谱记录：
 
@@ -139,7 +188,7 @@ node tools/serve.js
 - 下方三个按钮：**打印**（导出 TXT）/ **认输**（直接结束本局）/ **退出**（回首页，不保存）
 - 再点右上角 `‹` 收起
 
-### 音效
+#### 音效
 
 棋盘右上角第一行的喇叭图标可以开关全部音效（默认开启）。
 
@@ -149,13 +198,15 @@ node tools/serve.js
 
 > 浏览器有自动播放限制，如果结算语音没响，在页面上随便点一下就会补播。
 
-### 其他
+#### 其他
 
 - 顶部徽标显示双方阵营，轮到谁谁高亮
 - 人机模式下 AI 思考时右下会出现「引擎思考中…」
 - 人机执黑时，你的棋子永远在下方（棋盘上下翻转，坐标也随之变化）
 
-## 结算页
+<a id="player-result"></a>
+
+### 结算页
 
 对局结束会自动跳转。
 
@@ -172,13 +223,17 @@ node tools/serve.js
 | 打印 | 导出 TXT，含打印时间、对局配置、完整棋谱、结算文案 |
 | 确认 | 回到首页 |
 
-## 了解更多
+<a id="player-about"></a>
+
+### 了解更多
 
 顶部菜单的「了解更多」是一个 Markdown 文档页，右上角 `CN | EN` 可切换中英文。
 
 左侧目录可折叠，点击目录项跳转到对应段落。
 
-## 常见问题
+<a id="player-faq"></a>
+
+### 常见问题
 
 **Q：双击 html 文件打开，AI 不动？**
 `file://` 下浏览器禁止 Web Worker。请用 `node tools/serve.js` 或任意 HTTP 服务器。
@@ -197,9 +252,13 @@ node tools/serve.js
 
 ---
 
-# 第二部分：给开发者
+<a id="part-dev"></a>
 
-## 技术栈
+## 第二部分：给开发者
+
+<a id="dev-stack"></a>
+
+### 技术栈
 
 | 层 | 选型 | 约束 |
 |---|---|---|
@@ -211,14 +270,16 @@ node tools/serve.js
 
 代码风格约定：单函数 ≤ 30 行；IIFE 封装避免全局污染；核心逻辑写简短注释。
 
-## 项目结构
+<a id="dev-layout"></a>
+
+### 项目结构
 
 ```
 ChessCheers/
 ├── index.html                  # 部署入口，meta refresh 跳到 code/html/index.html
 ├── .nojekyll                   # 关闭 GitHub Pages 的 Jekyll 处理
 ├── AGENTS.md                   # 给 AI 编码助手的项目约定
-├── README.md / UserGuide.md    # 对外文档
+├── README.md                   # 项目介绍（英文版在 doc/README_en.md）
 │
 ├── code/
 │   ├── html/                   # index / game / result / about
@@ -233,14 +294,20 @@ ChessCheers/
 │   │   ├── about.js            # 了解更多：Markdown 解析 + 目录
 │   │   ├── chess.min.js        # 第三方：Chess.js
 │   │   └── stockfish.wasm(.js) # 第三方：Stockfish
-│   └── test/                   # CDP 自动化测试（见「测试」）
+│   └── test/                   # CDP 自动化测试
 │
 ├── data/
 │   ├── chessboard/             # 棋盘图片
 │   ├── chesspiece/             # 阵营素材
-│   └── chesslogo/              # 项目 logo
+│   ├── chesslogo/              # 项目 logo
+│   └── others/                 # 文档用示意图
 │
-├── doc/intro/                  # 「了解更多」页面的 Markdown（运行时通过 XHR 读取）
+├── doc/
+│   ├── PRD.md                  # 项目设计方案
+│   ├── UserGuide.md            # 本文（英文版 UserGuide_en.md）
+│   ├── README_en.md            # README 英文版
+│   └── intro/                  # 「了解更多」页面读取的中英文文档
+│
 └── tools/
     ├── serve.js                # 本地服务器（启动时自动扫描素材）
     ├── serve.command           # macOS 双击启动
@@ -248,9 +315,11 @@ ChessCheers/
     └── bump-version.js         # 批量更新静态资源版本号
 ```
 
-## 代码架构与数据流
+<a id="dev-arch"></a>
 
-### 为什么需要「素材清单」
+### 代码架构与数据流
+
+#### 为什么需要「素材清单」
 
 纯静态站点**无法在运行时列举目录**（没有 `readdir`，也拿不到服务器目录索引）。
 所以素材列表必须在启动/部署前扫描生成，写进 `code/js/assets.js`，页面再从这个 JS 变量读取。
@@ -268,7 +337,7 @@ code/js/assets.js  (window.CHESS_ASSETS = { camps, boards, logo, ... })
 
 `assets.js` 是**生成物**，不要手动编辑；改素材后重新扫描即可。
 
-### 四个页面各自的职责
+#### 四个页面各自的职责
 
 | 文件 | 职责 | 关键函数 |
 |---|---|---|
@@ -277,7 +346,7 @@ code/js/assets.js  (window.CHESS_ASSETS = { camps, boards, logo, ... })
 | `result.js` | 胜负文案、结算素材与语音、TXT 导出、再来一盘 | `buildText` / `loadAsset` / `printRecord` |
 | `about.js` | Markdown 逐行解析、目录生成、中英切换 | `parseMarkdown` / `generateToc` / `loadDocument` |
 
-### 对弈页的分层
+#### 对弈页的分层
 
 `game.js` 内部按职责分层，读代码时建议按这个顺序：
 
@@ -293,7 +362,7 @@ UI 控制  updateMoveList / updateTurnBadge / toggleSound / printRecord
 
 **视角翻转**：`isFlipped()` 只在「人机 + 玩家执黑」时为真。翻转只影响呈现层（`placeAt`、`squareFromPoint`、坐标标签、棋盘背景旋转），规则层始终使用标准格号。新增任何涉及坐标的代码，都必须经过 `viewCol` / `viewRow`。
 
-### 页面之间的参数契约
+#### 页面之间的参数契约
 
 首页 → 对弈页（URL 参数）：
 
@@ -304,7 +373,7 @@ game.html?wf=<白方阵营>&bf=<黑方阵营>&board=<棋盘名>&mode=pve|pvp[&el
 对弈页 → 结算页：完整对局数据写入 `sessionStorage`（键名 `chesscheers_last_game`），
 URL 只带 `outcome` 等少量参数作为兜底。**改任何一方都要同步另一边。**
 
-### 引擎
+#### 引擎
 
 `stockfish-engine.js` 用一层 Worker 直连 `stockfish.wasm.js`，走 UCI 协议：
 
@@ -314,15 +383,17 @@ URL 只带 `outcome` 等少量参数作为兜底。**改任何一方都要同步
 
 难度表在 `ELO_LEVELS`，同时控制搜索深度、Skill Level 与最短思考时间。
 
-## 素材规范
+<a id="dev-assets"></a>
 
-### 棋盘
+### 素材规范
+
+#### 棋盘
 
 - 格式：`png` / `jpg` / `jpeg`
 - 长宽比：**严格 1:1**（容差 1%），否则会被判定不合格并跳过
 - 命名：无限制，文件名（去扩展名）即下拉选项名
 
-### 阵营
+#### 阵营
 
 ```
 data/chesspiece/<阵营名>/
@@ -351,18 +422,20 @@ data/chesspiece/<阵营名>/
 
 写代码时如果新增状态，要同时改 `STATES` 与 `asset-loader` 里的 `STATE_LABELS`。
 
-### 结算素材
+#### 结算素材
 
 三个结局各自独立，缺失时不会报错，只是结算页退回灰色简洁弹窗（无插画、无语音）。
 
 图片建议 16:9 横图：结算页按此比例铺开，`object-fit: cover` 只裁掉极窄的边。
 
-### Logo
+#### Logo
 
-`data/chesslogo/` 下放一张 `logo.png` 即可用于首页展示与网页图标。
-若同时提供 `logo-128.png`，会优先用它作 favicon（避免每页加载大图）。
+`data/chesslogo/` 下放一张名字含 `logo` 的图片即可用于首页展示与网页图标。
+若同时提供带尺寸后缀的版本（如 `-128`），会优先用它作 favicon，避免每页加载大图。
 
-## 本地开发流程
+<a id="dev-workflow"></a>
+
+### 本地开发流程
 
 ```bash
 node tools/serve.js          # 起服务，自动扫描素材，带规范检查报告
@@ -378,13 +451,15 @@ node tools/bump-version.js
 它会把 5 个 HTML 的 `?v=` 与 3 个 JS 里的 `BUILD` 常量刷成同一个新值。
 忘了这一步，浏览器可能继续用旧缓存，表现为「改了没生效」。
 
-### 素材变了
+素材变了：
 
 ```bash
 node tools/scan-assets.js    # 手动扫描（用 serve.js 时启动会自动跑）
 ```
 
-## 测试
+<a id="dev-test"></a>
+
+### 测试
 
 需要本机装有 Google Chrome，先起服务，再跑：
 
@@ -397,23 +472,28 @@ node code/test/cdp-result.js   # 结算页：胜负判定/素材/按钮/打印/�
 三个脚本都会启动 headless Chrome，通过 CDP 真实操作页面并断言结果。
 端口默认 `8766`，可用 `CC_BASE=http://127.0.0.1:8080` 覆盖。
 
-另外 `code/test/selftest.html` 是浏览器内自检页，直接访问即可看渲染层是否正常。
+<a id="dev-deploy"></a>
 
-## 部署
+### 发布网页版
 
-1. 推送仓库到 GitHub
-2. Settings → Pages → Source 选 `main` 分支、根目录
-3. 访问 `https://<用户名>.github.io/<仓库名>/`
+把项目发布成可在浏览器直接访问的网址是**可选步骤**：只在自己电脑上玩，本地启动就够了。
+如果希望分享给朋友，或者自己换台设备也能玩，可以按照下面的步骤部署到你自己的 GitHub Pages。
+
+1. 把仓库推送到**你自己的** GitHub 账号
+2. 进入仓库 → Settings → Pages → Source 选 `main` 分支、根目录
+3. 等待约 1 分钟，访问 `https://<你的用户名>.github.io/<仓库名>/`
 
 注意事项：
 
+- 部署前执行一次 `node tools/scan-assets.js`，确保素材清单与素材一致
 - 根目录 `index.html` 负责跳转，`.nojekyll` 关闭 Jekyll（否则下划线开头的文件会被忽略）
-- 部署前执行一次 `node tools/scan-assets.js`，确保清单与素材一致
 - 页面与素材全部使用相对路径，部署到子目录（`/仓库名/`）也能正常工作
 
-## 可以改什么 / 不要动什么
+<a id="dev-boundary"></a>
 
-### 放心改
+### 可以改什么 / 不要动什么
+
+#### 放心改
 
 - `code/css/` —— 样式随你
 - `code/js/index.js`、`result.js`、`about.js` —— 页面逻辑
@@ -421,19 +501,21 @@ node code/test/cdp-result.js   # 结算页：胜负判定/素材/按钮/打印/�
 - `code/html/` —— 结构与文案
 - `tools/` —— 工具脚本
 
-### 谨慎改
+#### 谨慎改
 
 - `code/js/asset-loader.js` —— 改素材解析规则会影响全部页面
 - `code/js/stockfish-engine.js` —— 改通信协议要考虑 Worker 的异步特性
 - `code/js/assets.js` —— **不要手改**，它是 `scan-assets.js` 生成的
 
-### 不要动
+#### 不要动
 
 - `data/` —— 素材本身。要加素材请新增目录，不要改动已有文件
 - `doc/intro/` —— 「了解更多」页面运行时读取，删改会导致该页空白
 - `code/js/chess.min.js`、`stockfish.wasm*` —— 第三方库，替换需自行验证兼容性
 
-## 常见坑
+<a id="dev-pitfalls"></a>
+
+### 常见坑
 
 | 现象 | 原因 |
 |---|---|
@@ -443,6 +525,29 @@ node code/test/cdp-result.js   # 结算页：胜负判定/素材/按钮/打印/�
 | 棋盘格子颜色错位 | 只翻转了棋子没翻转棋盘背景，检查 `renderBoardBg` 与 `isFlipped` |
 | 结算页标题不对 | `outcome` 与 `winner` 不一致，检查 `result.js` 的 `loadState` |
 | 手机端布局溢出 | 用 `--window-size` 截图会误判，需用 CDP 的设备模拟验证 |
+
+---
+
+<a id="license"></a>
+
+## 许可与声明
+
+- **代码**：本项目仅供学习与交流，严禁商业用途。转载请注明出处。
+- **第三方库**：
+  - [Chess.js](https://github.com/jhlywa/chess.js) — BSD-2-Clause
+  - [Stockfish](https://github.com/official-stockfish/Stockfish) — GPL-3.0
+  - [stockfish.wasm](https://github.com/lichess-org/stockfish.wasm) — GPL-3.0
+- **素材（`data/` 目录）**：棋子立绘、配音等来自《明日方舟》同人创作与 [PRTS 中文维基](https://prts.wiki/)，版权归原权利方所有，**仅用于个人学习与非商业展示**。如有侵权，请通过 issue 联系，作者将立即下架相关素材。
+- 本项目与上海鹰角网络科技有限公司无关。
+
+### 引用规范
+
+欢迎引用该项目，或基于该项目进行其他创作，引用格式如下：
+
+- 项目名称：ChessCheers
+- 项目地址：https://github.com/Schlampig/ChessCheers
+- 项目作者：猪猪熊(PigPigBear/Kuyiking)
+- 作者链接：https://github.com/Schlampig
 
 ---
 

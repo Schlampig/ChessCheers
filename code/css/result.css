@@ -1,21 +1,36 @@
-/* ChessCheers 结算页样式
-   按 PRD 三.4：标题 24px 粗体、小标题 16px 常规、黑色文字；按钮 80×40。
-   有结算素材时按钮横排 + 素材占页面约 75%；无素材时按钮竖排 + 灰色半透明弹窗。 */
+/* ChessCheers — 结算页样式
+   视觉世界：1930 年代动画片头卡。结算画面像一张印着角色立绘的剧场节目单：
+   奶油纸底、墨线描边，顶部一道结局色带（胜=赭金 / 负=砖红 / 和=橄榄），
+   立绘占据卡片主体，文字与按钮保持克制，不与画面争抢注意力。 */
+
+:root {
+    --paper: #f2e5cd;
+    --paper-2: #e9d8b8;
+    --card: #fbf3e1;
+    --ink: #2b1c12;
+    --ink-2: #5b4634;
+    --ink-3: #8b7457;
+    --line: #c9b48f;
+    --orange: #c2561f;
+    --gold: #e2a63c;
+    --brick: #a5382b;
+    --sage: #6d7c4f;
+}
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     min-height: 100vh;
-    background:
-        radial-gradient(1100px 700px at 50% -8%, #232a4d 0%, rgba(15, 18, 32, 0) 62%),
-        linear-gradient(180deg, #12162a 0%, #0b0e1a 100%);
-    background-attachment: fixed;
-    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--paper);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px 16px;
 }
+
+::selection { background: var(--gold); color: var(--ink); }
 
 /* ============ 弹窗容器 ============ */
 .result-modal {
@@ -26,7 +41,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background: rgba(6, 8, 16, .62);
+    background: rgba(43, 28, 18, .55);
     backdrop-filter: blur(3px);
 }
 
@@ -34,18 +49,18 @@ body {
     max-width: 92vw;
     max-height: 94vh;
     overflow-y: auto;
-    padding: 22px 24px;
-    border-radius: 14px;
+    padding: 24px 26px;
+    border-radius: 18px;
     text-align: center;
-    /* 无素材态：灰色、透明度 60%，尺寸刚好放下文字和按钮 */
-    background: rgba(240, 242, 248, .60);
-    border: 1px solid rgba(255, 255, 255, .35);
-    box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
-    animation: pop .38s cubic-bezier(.2, .9, .3, 1.2);
+    border: 2px solid var(--ink);
+    /* 无素材态：奶油纸色、略透，尺寸刚好放下文字与按钮 */
+    background: rgba(251, 243, 225, .82);
+    box-shadow: 0 24px 54px rgba(20, 12, 6, .38);
+    animation: pop .36s cubic-bezier(.2, .9, .3, 1.2);
 }
 
 @keyframes pop {
-    from { opacity: 0; transform: translateY(18px) scale(.96); }
+    from { opacity: 0; transform: translateY(16px) scale(.97); }
     to { opacity: 1; transform: none; }
 }
 
@@ -53,26 +68,25 @@ body {
 .result-title-section { background: transparent; }
 
 .result-title {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1a1c26;
-    letter-spacing: 1px;
-    background: transparent;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: .05em;
+    color: var(--ink);
+    line-height: 1.25;
 }
 
 .result-subtitle {
     margin-top: 10px;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.6;
-    color: #33364a;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.65;
+    color: var(--ink-2);
     background: transparent;
 }
 
 /* ============ 按钮区域 ============ */
 .result-buttons {
     margin-top: 20px;
-    /* 无素材态：三排竖排 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -80,31 +94,33 @@ body {
 }
 
 .result-btn {
-    width: 80px;
+    width: 92px;
     height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(60, 66, 96, .25);
-    border-radius: 8px;
-    background: rgba(255, 255, 255, .82);
-    color: #2b2f45;
-    font-size: 14px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
     font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
     text-decoration: none;
     cursor: pointer;
-    transition: all .2s ease;
+    transition: background .18s ease, transform .18s ease;
 }
 .result-btn:hover {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #fff;
-    border-color: transparent;
+    background: var(--gold);
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, .38);
+}
+.result-btn:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
 }
 
 /* ============ 素材区域 ============ */
-/* 结算素材同时作为整页虚化背景，营造「结算画面」氛围 */
+/* 立绘同时作为整页虚化背景，营造节目单式的氛围 */
 body::before {
     content: "";
     position: fixed;
@@ -112,7 +128,7 @@ body::before {
     background-image: var(--result-bg, none);
     background-size: cover;
     background-position: center;
-    filter: blur(26px) brightness(.36) saturate(1.15);
+    filter: blur(26px) brightness(.52) saturate(.92) sepia(.18);
     opacity: 0;
     transition: opacity .7s ease;
     z-index: 0;
@@ -124,7 +140,7 @@ body.has-result-bg::before { opacity: 1; }
     display: none;
     position: relative;
     overflow: hidden;
-    background: #0a0d18;
+    background: #231710;
 }
 
 /* 图片上沿与卡片衔接的柔化过渡 */
@@ -133,7 +149,7 @@ body.has-result-bg::before { opacity: 1; }
     position: absolute;
     inset: 0 0 auto 0;
     height: 34px;
-    background: linear-gradient(180deg, rgba(247, 248, 252, .55), rgba(247, 248, 252, 0));
+    background: linear-gradient(180deg, rgba(251, 243, 225, .55), rgba(251, 243, 225, 0));
     pointer-events: none;
 }
 
@@ -141,7 +157,7 @@ body.has-result-bg::before { opacity: 1; }
     display: block;
     width: 100%;
     height: 100%;
-    /* 素材比例 1.70~1.85，与 16:9 接近，cover 只裁掉极窄的左右边 */
+    /* 素材比例 1.70~1.85，与 16:9 接近，cover 只裁掉极窄的边 */
     object-fit: cover;
     object-position: center;
     opacity: 0;
@@ -153,9 +169,9 @@ body.has-result-bg::before { opacity: 1; }
     transform: scale(1);
 }
 
-/* 有素材态：按钮横排，素材在按钮下方铺满剩余空间（PRD 三.4） */
+/* 有素材态：按钮横排，素材在按钮下方铺满剩余空间 */
 .result-content.with-asset {
-    background: rgba(247, 248, 252, .95);
+    background: var(--card);
     width: min(94vw, 1080px);
     max-width: 1080px;
     max-height: 94vh;
@@ -164,20 +180,24 @@ body.has-result-bg::before { opacity: 1; }
     flex-direction: column;
     overflow: hidden;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, .45);
-    box-shadow: 0 28px 80px rgba(0, 0, 0, .55);
+    box-shadow: 0 28px 62px rgba(20, 12, 6, .42);
 }
 
-/* 顶部结局色条：一眼区分胜/负/和 */
+/* 顶部结局色带：一眼区分胜 / 负 / 和 */
 .result-content.with-asset::before {
     content: "";
     flex: 0 0 auto;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, var(--accent, #667eea), transparent);
+    height: 5px;
+    background: var(--accent, var(--orange));
 }
-.result-content[data-outcome="win"] { --accent: #f2c66a; }
-.result-content[data-outcome="lose"] { --accent: #8a93b8; }
-.result-content[data-outcome="draw"] { --accent: #9aa4c4; }
+.result-content[data-outcome="win"] { --accent: var(--gold); }
+.result-content[data-outcome="lose"] { --accent: var(--brick); }
+.result-content[data-outcome="draw"] { --accent: var(--sage); }
+
+.result-content[data-outcome="win"] .result-title { color: #8a5a12; }
+.result-content[data-outcome="lose"] .result-title { color: var(--brick); }
+.result-content[data-outcome="draw"] .result-title { color: var(--ink-2); }
+
 .result-content.with-asset .result-title-section {
     padding: 22px 26px 0;
     flex: 0 0 auto;
@@ -186,7 +206,7 @@ body.has-result-bg::before { opacity: 1; }
     flex: 0 0 auto;
     flex-direction: row;
     justify-content: center;
-    gap: 14px;
+    gap: 12px;
     padding: 16px 26px 18px;
     margin-top: 0;
 }
@@ -194,54 +214,52 @@ body.has-result-bg::before { opacity: 1; }
     display: block;
     flex: 0 0 auto;
     width: 100%;
-    /* 素材均为 16:9 横图，按此比例铺开，避免被裁切 */
+    /* 素材均为 16:9 横图，按此比例铺开，避免裁切人物 */
     aspect-ratio: 16 / 9;
     max-height: 72vh;
 }
 
-/* ============ 结局配色 ============ */
-.result-content[data-outcome="win"] .result-title { color: #a8760c; }
-.result-content[data-outcome="lose"] .result-title { color: #47506e; }
-.result-content[data-outcome="draw"] .result-title { color: #47506e; }
-
+/* 有素材时用结局色描边强化情绪，无素材时保持朴素 */
 .result-content[data-outcome="win"].with-asset {
-    border-color: rgba(242, 198, 106, .75);
-    box-shadow: 0 28px 80px rgba(0, 0, 0, .55),
-                0 0 0 2px rgba(242, 198, 106, .45),
-                0 0 48px rgba(242, 198, 106, .30);
-}
-.result-content[data-outcome="win"] .result-title {
-    text-shadow: 0 0 18px rgba(242, 198, 106, .55);
+    box-shadow: 0 28px 62px rgba(20, 12, 6, .42), 0 0 0 3px rgba(226, 166, 60, .55);
 }
 .result-content[data-outcome="lose"].with-asset {
-    border-color: rgba(138, 147, 184, .55);
+    box-shadow: 0 28px 62px rgba(20, 12, 6, .42), 0 0 0 3px rgba(165, 56, 43, .42);
+}
+.result-content[data-outcome="draw"].with-asset {
+    box-shadow: 0 28px 62px rgba(20, 12, 6, .42), 0 0 0 3px rgba(109, 124, 79, .42);
 }
 
-/* ============ Toast ============ */
+/* ============ 提示 ============ */
 .toast {
     position: fixed;
-    top: -60px;
+    top: -80px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 11px 22px;
-    border-radius: 999px;
-    background: rgba(15, 18, 32, .95);
-    border: 1px solid rgba(255, 255, 255, .12);
-    color: #e8ebf5;
+    max-width: min(86vw, 520px);
+    padding: 12px 22px;
+    border: 2px solid var(--ink);
+    border-radius: 12px;
+    background: var(--ink);
+    color: #fdf3e0;
     font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
     z-index: 400;
-    white-space: nowrap;
-    transition: top .32s cubic-bezier(.2, .9, .3, 1.2);
+    transition: top .3s cubic-bezier(.2, .9, .3, 1.2);
 }
 .toast.show { top: 22px; }
 
 /* ============ 响应式 ============ */
 @media (max-width: 620px) {
-    .result-title { font-size: 20px; }
+    .result-title { font-size: 21px; }
     .result-subtitle { font-size: 14px; }
+    .result-content { border-radius: 16px; }
     .result-content.with-asset { width: 94vw; border-radius: 16px; }
     .result-content.with-asset .result-title-section { padding: 18px 18px 0; }
     .result-content.with-asset .result-buttons { padding: 14px 18px 16px; gap: 10px; }
+    .result-btn { width: 84px; height: 38px; font-size: 13px; }
     /* 竖屏下按比例撑高，让立绘更醒目 */
     .result-content.with-asset .result-asset {
         aspect-ratio: auto;

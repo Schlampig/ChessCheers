@@ -8,7 +8,7 @@
 ## 与当前实现的差异说明
 
 > 本节于 2026-10-30 补充。PRD 作为最初的设计蓝图保留原貌，实际落地时有一部分调整，
-> 以代码与 [README](../README.md) / [UserGuide](../UserGuide.md) 为准。
+> 以代码与 [README](../README.md) / [UserGuide](UserGuide.md) 为准。
 
 | PRD 中的描述 | 当前实现 |
 |---|---|

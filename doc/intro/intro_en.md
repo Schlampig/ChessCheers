@@ -3,6 +3,8 @@
 ## What is ChessCheers?
 ChessCheers is an open-source, web-based chess project for human-vs-AI play. In its early stage, the project was developed mainly with Claude Code in combination with GLM-4.7 (development was put on hold midway for personal reasons); in the later stage, it was developed mainly with WorkBuddy, together with Hy4 preview and DeepSeek V4.1-Flash-1017, in a vibe-coding style. A number of web-based LLMs (such as Doubao and Qwen) were also used for general-knowledge Q&A, as well as for some asset generation and modification. All essential resources — code, documentation, assets, and so on — will be hosted on GitHub. Under the hood, move calculation is powered by the JavaScript version of Stockfish, while move handling is managed by Chess.js; the entire application is ultimately deployed for use via GitHub Pages (github.io). The framework of the whole project is generic: simply follow the example's format and specifications to replace or add image and audio assets, and you can build your own chessboard lineup. The image and audio assets currently in use are mainly sourced from PRTS, the Chinese Arknights Wiki.
 
+It should be noted that **this project is a fan work of Arknights**: the chess piece characters and voices come from the game. The author built it out of a love for both the game and chess, and it is not affiliated with the official rights holders. See [Notes](#notes) for the asset usage statement.
+
 ## Who Built ChessCheers?
 PigPigBear (also known as Kuyiking) completed the entire production of this project with the help of large language models. Feel free to visit the author's GitHub page: https://github.com/Schlampig
 
@@ -36,13 +38,13 @@ This is a practice project. The author undertook it to get familiar with Claude 
 Arknights PRTS (Chinese Wiki): https://prts.wiki/w/%CA%D7%D2%B3
 
 ## Notes
-- This project is for learning and exchange purposes only. Commercial use is strictly prohibited!
-- If any assets or code used in this project are found to be inappropriate or in violation of regulations, please notify the author via an issue, and the author will take down the assets.
+- This project is provided for learning and exchange purposes only. Commercial use is strictly prohibited!
+- If any assets or code used in this project are found to be inappropriate or in violation of regulations, please notify the author via an issue, and the author will take down the relevant assets immediately.
 
 ## Citation Guidelines
 You are welcome to cite this project, or to create other works based on it. Please use the following citation format:
 - Project Name: ChessCheers
-- Project URL: https://github.com/Schlampig
+- Project URL: https://github.com/Schlampig/ChessCheers
 - Project Author: PigPigBear (Kuyiking)
 - Author Link: https://github.com/Schlampig
 

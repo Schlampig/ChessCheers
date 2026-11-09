@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * ChessCheers 端到端检查：通过 CDP 在真实时间下驱动对弈页，
- * 模拟玩家走子并等待 Stockfish 应手，同时收集浏览器控制台日志。
- * 前置：本地已启动 http://127.0.0.1:8765，且本机装有 Google Chrome。
+ * ChessCheers — 对弈页端到端检查
+ *
+ * 通过 CDP 在真实时间下驱动对弈页：模拟走子并等待 Stockfish 应手，
+ * 覆盖吃子 / 易位 / 吃过路兵 / 升变 / 非法走法 / 拖拽 / 视角翻转 / 终局判定。
+ * 前置：本地已启动 http://127.0.0.1:8766，且本机装有 Google Chrome。
  */
 var CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 var PORT = 9222;

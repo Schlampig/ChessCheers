@@ -67,6 +67,7 @@ function resolveSafe(pathname) {
 
 function send(res, status, body, headers) {
     var h = headers || {};
+    // 开发服务器统一禁用缓存：改完 css/js 刷新即生效，避免与浏览器缓存反复纠缠
     h['Cache-Control'] = 'no-store';
     res.writeHead(status, h);
     res.end(body);

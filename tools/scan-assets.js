@@ -72,7 +72,13 @@ function listFiles(dir, exts) {
 }
 
 /**
- * 状态映射：优先文件名匹配，其次按文件顺序分配，不足则循环复用（PRD 四.2）
+ * 状态映射：把一组素材文件分配到「选中 / 落子 / 被吃」三个状态。
+ *
+ * 三级兜底的设计理由：素材作者的水平与习惯差异很大——
+ *   1. 先按文件名匹配，尊重规范命名的作者；
+ *   2. 再按排序分配，让「随手放的几张图」也能跑起来；
+ *   3. 最后循环复用，保证只有一张图时三个状态仍有画面，不至于出现空棋子。
+ * 宁可重复使用素材，也不让棋盘出现空洞。
  */
 function mapStates(files, stateDefs) {
     var result = {};
@@ -297,24 +303,43 @@ function scanBoards() {
 }
 
 // 扫描项目 logo（data/chesslogo/）
-// 大图用于页面展示，若有 *-128 缩略图则优先作为 favicon，避免每个页面都拉几 MB
+// 三级尺寸：原图（品牌源文件）/ 展示图（-512，供页面使用）/ 图标（最小的 -128 等）。
+// 页面只加载展示图与图标，原图不进入任何页面的请求，避免几 MB 的开销。
 function scanLogo() {
     var files = listFiles(LOGO_DIR, LOGO_EXT);
     if (!files.length) return null;
 
     var main = null;
+    var display = null;
+    var displaySize = 0;
     var thumb = null;
+    var thumbSize = Infinity;
     var i;
+
     for (i = 0; i < files.length; i++) {
-        if (/^logo\.(png|jpg|jpeg|svg|webp)$/i.test(files[i])) main = files[i];
-        if (/^logo-\d+\./i.test(files[i]) && !thumb) thumb = files[i];
+        var name = files[i];
+        if (!/logo/i.test(name)) continue;
+
+        var m = name.match(/-(\d+)\.(png|jpe?g|svg|webp)$/i);
+        if (m) {
+            var size = parseInt(m[1], 10);
+            // 512 一档用于页面展示，其余按最小尺寸作 favicon
+            if (size <= 512 && size > displaySize) { display = name; displaySize = size; }
+            if (size < thumbSize) { thumb = name; thumbSize = size; }
+            continue;
+        }
+        if (!main) main = name;
     }
+
     if (!main) main = files[0];
-    if (!thumb) thumb = main;
+    if (!display) display = main;
+    if (!thumb) thumb = display;
 
     return {
         file: main,
         path: '../../data/chesslogo/' + main,
+        displayFile: display,
+        displayPath: '../../data/chesslogo/' + display,
         thumbFile: thumb,
         thumbPath: '../../data/chesslogo/' + thumb
     };

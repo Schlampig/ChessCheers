@@ -1,9 +1,9 @@
 /**
  * ChessCheers 素材清单（由 tools/scan-assets.js 自动生成，请勿手工编辑）
- * 生成时间: 2026-10-30T11:26:57.634Z
+ * 生成时间: 2026-11-09T09:59:40.304Z
  */
 window.CHESS_ASSETS = {
-  "generatedAt": "2026-10-30T11:26:57.634Z",
+  "generatedAt": "2026-11-09T09:59:40.304Z",
   "pieceRoot": "../../data/chesspiece/",
   "boardRoot": "../../data/chessboard/",
   "camps": [
@@ -434,10 +434,12 @@ window.CHESS_ASSETS = {
     }
   ],
   "logo": {
-    "file": "logo.png",
-    "path": "../../data/chesslogo/logo.png",
-    "thumbFile": "logo-128.png",
-    "thumbPath": "../../data/chesslogo/logo-128.png"
+    "file": "ChessCheers_logo.png",
+    "path": "../../data/chesslogo/ChessCheers_logo.png",
+    "displayFile": "ChessCheers_logo-512.png",
+    "displayPath": "../../data/chesslogo/ChessCheers_logo-512.png",
+    "thumbFile": "ChessCheers_logo-128.png",
+    "thumbPath": "../../data/chesslogo/ChessCheers_logo-128.png"
   },
   "ready": true
 };

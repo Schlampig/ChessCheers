@@ -1,6 +1,16 @@
 /**
- * ChessCheers 对弈页主逻辑
- * 分层：几何 → 渲染 → 动画编排 → 交互 → AI → UI 控制
+ * ChessCheers — 对弈页主逻辑（code/html/game.html）
+ *
+ * 功能：渲染棋盘与棋子，处理点击/拖拽走子，编排走子与吃子动画，
+ *       调度 Stockfish 走子，维护棋谱，并在终局时汇总结算数据。
+ * 模块：几何 → 渲染 → 动画编排 → 交互 → AI → UI 控制 → 结算
+ * 设计：
+ *   - 规则层只认标准格号，展示层统一经 viewCol / viewRow 换算，
+ *     因此「人机执黑翻转棋盘」不需要改动任何走子逻辑；
+ *   - 动画采用「先平移、后落库」的顺序：棋子视觉先滑到目标格，
+ *     再提交棋谱与重排 DOM，避免中途重绘造成跳变；
+ *   - 所有交互入口都检查 state.locked 与 state.finished，
+ *     防止 AI 思考或终局动画期间用户操作打乱局面。
  */
 (function () {
     'use strict';
@@ -12,7 +22,7 @@
     var DRAG_THRESHOLD = 4;          // 拖拽判定阈值（像素）
     var STORAGE_KEY = 'chesscheers_last_game';
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202610301855';
+    var BUILD = '202611091759';
 
     // ---------- 运行时状态 ----------
     var state = {
@@ -146,7 +156,8 @@
     function colOf(sq) { return FILES.indexOf(sq.charAt(0)); }
     function rowOf(sq) { return RANKS.indexOf(sq.charAt(1)); }
 
-    // 视角翻转：仅人机对弈且玩家执黑时，让黑方位于屏幕下方
+    // 视角翻转：仅人机对弈且玩家执黑时，让黑方位于屏幕下方。
+    // 人 vs 人 不翻转——两名玩家共用一块屏幕，固定白方在下更贴合棋谱与记谱习惯。
     function isFlipped() {
         return state.mode === 'pve' && state.playerColor === 'b';
     }
@@ -559,7 +570,8 @@
         }
     }
 
-    // 落子/被吃/易位同时编排，吃子方层级在上（PRD 四.3）
+    // 落子/被吃/易位同时编排：吃子方层级在上、被吃方压在下方，
+    // 避免两段动画互相遮挡，也让「谁吃谁」一眼可辨。
     function playImpactFx(ctx, result) {
         var pending = 1;
         var gen = ++fxGen;

@@ -1,14 +1,21 @@
 /**
- * ChessCheers 结算页逻辑
- * 结局以 game.js 落盘的 sessionStorage 为准，URL 参数仅作兜底。
- * 负责：文案渲染、结算素材与语音、棋谱导出、再来一盘。
+ * ChessCheers — 结算页逻辑（code/html/result.html）
+ *
+ * 功能：还原上一局结果并展示结局文案、阵营插画与语音，支持导出棋谱与沿用配置重开。
+ * 模块：状态还原 · 文案生成 · 素材与语音 · 文本导出 · 跳转
+ * 设计：
+ *   - 完整对局数据存放在 sessionStorage，URL 只带少量参数，避免长棋谱撑爆地址栏；
+ *     两者同时存在时以 sessionStorage 为准，URL 仅作兜底；
+ *   - 结局以 outcome 为准反推 winner，保证「胜负」与「插画」永远自洽——
+ *     只带 outcome 的入口（如手动打开本页）也不会出现标题与画面矛盾；
+ *   - 交互绑定先于渲染执行，即使素材缺失或渲染异常，按钮依然可用。
  */
 (function () {
     'use strict';
 
     var STORAGE_KEY = 'chesscheers_last_game';
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202610301855';
+    var BUILD = '202611091759';
 
     // ELO 档位名（与首页一致）
     var ELO_NAMES = {
@@ -81,8 +88,7 @@
         // 避免只带 outcome 参数（无 sessionStorage）时误判为白方获胜
         if (state.outcome === 'whiteWin') state.winner = 'white';
         else if (state.outcome === 'blackWin') state.winner = 'black';
-        else state.winner = src.winner || null;
-        state.mode = src.mode || params.mode || 'pve';
+        else state.winner = src.winner || null;        state.mode = src.mode || params.mode || 'pve';
         state.side = src.side || params.side || 'w';
         state.wf = src.wf || params.wf || '';
         state.bf = src.bf || params.bf || '';

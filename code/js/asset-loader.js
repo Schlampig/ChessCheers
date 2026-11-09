@@ -1,7 +1,13 @@
 /**
- * ChessCheers 素材加载器
- * 基于 code/js/assets.js（由 tools/scan-assets.js 生成）解析阵营/棋盘/结算素材。
- * 负责：素材查询、棋子元素构建、音效播放、素材预热。
+ * ChessCheers — 素材加载器（全站共用）
+ *
+ * 功能：把 code/js/assets.js 生成的清单解析成页面可直接使用的素材地址与 DOM 元素。
+ * 模块：清单查询 · 路径编码 · 棋子视觉构建 · 动画播放 · 音效 · 品牌资源（logo）
+ * 设计：
+ *   - 素材路径统一分段编码，兼容中文目录与空格文件名；
+ *   - 视觉素材既可能是视频也可能是静态图，按扩展名分流，缺失时回退到 Unicode 棋子，
+ *     保证任何素材缺口都不会让棋盘出现空洞；
+ *   - 放置态停在视频首帧，避免未交互的棋子在棋盘上持续播放动画，干扰观察局面。
  */
 (function () {
     'use strict';
@@ -131,10 +137,11 @@
         return encodePath(MANIFEST.boardRoot) + encodeURIComponent(board.file);
     }
 
-    // logo 绝对路径
+    // logo 绝对路径（页面展示用，优先中等尺寸，不加载几 MB 的原图）
     function getLogoPath() {
         var logo = getLogo();
-        return logo ? encodePath(logo.path) : null;
+        if (!logo) return null;
+        return encodePath(logo.displayPath || logo.path);
     }
 
     // favicon 路径：优先缩略图

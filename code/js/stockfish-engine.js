@@ -1,7 +1,13 @@
 /**
- * ChessCheers AI 引擎封装
- * 单层 Worker 直连 stockfish.wasm.js，UCI 协议收发。
- * 难度按 ELO 映射搜索深度与技能等级，并保证最短思考时长（PRD 六.2）。
+ * ChessCheers — AI 引擎封装（Stockfish WASM）
+ *
+ * 功能：在 Web Worker 中运行 Stockfish，按 ELO 档位控制搜索强度，向外提供单步走法回调。
+ * 模块：Worker 生命周期 · UCI 收发与解析 · 难度映射 · 最短思考时长控制
+ * 设计：
+ *   - 引擎放在 Worker 里，搜索期间主线程仍可响应拖拽与动画，界面不会卡顿；
+ *   - 难度同时由搜索深度、Skill Level 与最短思考时长三者决定：
+ *     低档位若只降深度，引擎仍可能瞬间走出好棋，配合最短思考时间才有「思考」的观感；
+ *   - 只设置引擎在 uciok 中声明过的选项，避免不同构建版本因未知指令报错。
  */
 (function () {
     'use strict';
@@ -84,7 +90,9 @@
         }
     }
 
-    // 收到 bestmove：补足最短思考时长后回调
+    // 收到 bestmove：补足最短思考时长后回调。
+    // 低档位搜索极快，立即落子会显得「秒回」而缺乏对弈感，因此按档位补足等待；
+    // 高档位本身耗时较长，计算出的 wait 自然为 0，不会额外拖延。
     function handleBestMove(line) {
         var parts = line.split(/\s+/);
         var move = parts[1] || '';

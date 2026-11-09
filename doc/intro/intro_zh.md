@@ -3,6 +3,8 @@
 ## 什么是ChessCheers
 ChessCheers是一个开源网页版人机对弈国际象棋项目。该项目前期主要使用Claude Code结合GLM-4.7（中间因个人原因搁置）、后期主要使用Workbuddy结合Hy4 preview与DeepSeek V4.1-flash-1017进行氛围编程（vibe coding）式开发，并使用诸多网页版大模型（如豆包、千问等）提供通用知识解答、部分素材生成与改动，必要的代码、文档、素材等全部资源将放于GitHub。底层基于Javascript版的Stockfish完成算棋，并使用Chess.js管理行棋，整个应用最终通过github.io部署使用。整个项目的框架是通用的，也就是说只需要参考示例的格式与规范替换/增加图片与音频素材，就能构建自己的棋盘阵容。目前使用的图像与音频素材主要采集自明日方舟PRTS中文Wiki资料站。
 
+需要说明的是，**本项目是《明日方舟》的同人作品**：棋子角色与语音来自该游戏，作者出于对游戏与国际象棋的喜爱而制作，与官方无关。相关素材的使用声明见[注意事项](#注意事项)。
+
 ## 谁做了ChessCheers？
 猪猪熊(named PigPigBear or Kuyiking)借助大模型的力量完成了该项目的全部制作。欢迎访问作者的GitHub页面：https://github.com/Schlampig
 
@@ -39,14 +41,14 @@ ChessCheers是一个开源网页版人机对弈国际象棋项目。该项目前
 
 
 ## 注意事项
-- 该项目仅供学习交流，严禁商用！
-- 该项目中使用的所有素材与代码，如存在不妥或违规，请在issue中告知作者，作者将下架素材。
+- 该项目仅供学习与交流，严禁商业用途！
+- 该项目中使用的所有素材与代码，如存在不妥或违规，请在 issue 中告知作者，作者将立即下架相关素材。
 
 
 ## 引用规范
 欢迎引用该项目，或基于该项目进行其他创作，引用格式如下：
 - 项目名称：ChessCheers
-- 项目地址：https://github.com/Schlampig
+- 项目地址：https://github.com/Schlampig/ChessCheers
 - 项目作者：猪猪熊(PigPigBear/Kuyiking)
 - 作者链接：https://github.com/Schlampig
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
- * ChessCheers 结算页与首页联动检查
- * A. 首页：人 vs 人 应隐藏难度卡片
- * B. PvE 认输 -> 结算页应显示「遗憾失败」（此前恒显「恭喜获胜」）
- * C. PvP 将杀 -> 结算页应显示「白方获胜」
+ * ChessCheers — 结算页与首页联动检查
+ *
+ * A. 首页：切到「人 vs 人」时难度卡片应隐藏
+ * B. 人机认输：结算页应显示「遗憾失败」
+ * C. 双人将杀：结算页应显示「恭喜，白方获胜」
  * 前置：本地已启动 http://127.0.0.1:8766，本机装有 Google Chrome。
  */
 var CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
