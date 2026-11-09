@@ -23,11 +23,16 @@ var OUT_FILE = path.join(ROOT, 'code', 'js', 'assets.js');
 // 必须存在的 6 个棋子目录
 var REQUIRED_PIECES = ['King', 'Queen', 'Bishop', 'Knight', 'Rook', 'Pawn'];
 
-// 图片/音频扩展名（PRD 四.1）
-var VIDEO_EXT = ['.webm', '.gif', '.png', '.jpg', '.jpeg'];
+// 图片/音频扩展名（PRD 四.1；webp 用于体积优化后的素材）
+var VIDEO_EXT = ['.webm', '.gif', '.png', '.jpg', '.jpeg', '.webp'];
 var AUDIO_EXT = ['.wav', '.m4a', '.mp3', '.ogg'];
-var BOARD_EXT = ['.png', '.jpg', '.jpeg'];
+var BOARD_EXT = ['.png', '.jpg', '.jpeg', '.webp'];
 var LOGO_EXT = ['.png', '.jpg', '.jpeg', '.svg', '.webp'];
+
+// 棋盘缩略图后缀：<名字>-mini.webp 只用于首页预览，不单独算作一张棋盘
+var BOARD_MINI_SUFFIX = '-mini';
+// 棋子静止态预览图（tools/make-posters.js 生成），不参与「选中/落子/被吃」状态映射
+var POSTER_PREFIX = '预览';
 
 // 三种状态及其文件名关键字（PRD 四.2）
 var STATES = [
@@ -135,7 +140,16 @@ function mapStates(files, stateDefs) {
 // 扫描单个棋子目录
 function scanPiece(campPath, pieceName) {
     var dir = path.join(campPath, pieceName);
-    var videos = listFiles(dir, VIDEO_EXT);
+    var all = listFiles(dir, VIDEO_EXT);
+    var videos = [];
+    var poster = null;
+    for (var n = 0; n < all.length; n++) {
+        if (all[n].indexOf(POSTER_PREFIX) === 0) {
+            if (!poster) poster = all[n];
+            continue;
+        }
+        videos.push(all[n]);
+    }
     var audios = listFiles(dir, AUDIO_EXT);
     var vMap = mapStates(videos, STATES);
     var aMap = mapStates(audios, STATES);
@@ -143,8 +157,9 @@ function scanPiece(campPath, pieceName) {
 
     for (var i = 0; i < STATES.length; i++) {
         var key = STATES[i].key;
-        entry[key] = { video: vMap[key] || null, audio: aMap[key] || null };
+        entry[key] = { video: vMap[key] || null, audio: aMap[key] || null, poster: poster };
     }
+    entry.poster = poster;
     entry.hasAssets = videos.length > 0;
     entry.videoCount = videos.length;
     entry.audioCount = audios.length;
@@ -253,12 +268,42 @@ function jpgSize(buf) {
     return null;
 }
 
+// 读取 WebP 尺寸（RIFF 容器，三种子格式的头部位置不同）
+function webpSize(buf) {
+    if (buf.length < 30) return null;
+    if (buf.toString('ascii', 0, 4) !== 'RIFF') return null;
+    if (buf.toString('ascii', 8, 12) !== 'WEBP') return null;
+    var chunk = buf.toString('ascii', 12, 16);
+
+    if (chunk === 'VP8X') {
+        return {
+            width: 1 + buf.readUIntLE(24, 3),
+            height: 1 + buf.readUIntLE(27, 3)
+        };
+    }
+    if (chunk === 'VP8 ') {
+        return {
+            width: buf.readUInt16LE(26) & 0x3fff,
+            height: buf.readUInt16LE(28) & 0x3fff
+        };
+    }
+    if (chunk === 'VP8L') {
+        var bits = buf.readUInt32LE(21);
+        return {
+            width: (bits & 0x3fff) + 1,
+            height: ((bits >> 14) & 0x3fff) + 1
+        };
+    }
+    return null;
+}
+
 function imageSize(file) {
     try {
         var buf = fs.readFileSync(file);
         var ext = extOf(file);
         if (ext === '.png') return pngSize(buf);
         if (ext === '.jpg' || ext === '.jpeg') return jpgSize(buf);
+        if (ext === '.webp') return webpSize(buf);
         return null;
     } catch (e) {
         return null;
@@ -274,6 +319,10 @@ function scanBoards() {
         if (names[i].charAt(0) === '.') continue;
         var ext = extOf(names[i]);
         if (BOARD_EXT.indexOf(ext) < 0) continue;
+        var base = names[i].slice(0, names[i].length - ext.length);
+        // 首页预览用的缩略图不是一张独立棋盘
+        if (base.slice(-BOARD_MINI_SUFFIX.length) === BOARD_MINI_SUFFIX) continue;
+
         var full = path.join(BOARD_DIR, names[i]);
         var size = imageSize(full);
         var ratioOk = true;
@@ -290,9 +339,14 @@ function scanBoards() {
             }
         }
 
+        // 缩略图：优先同名 -mini，其次退回原图
+        var miniName = base + BOARD_MINI_SUFFIX + '.webp';
+        var thumb = fs.existsSync(path.join(BOARD_DIR, miniName)) ? miniName : names[i];
+
         out.push({
-            name: names[i].slice(0, names[i].length - ext.length),
+            name: base,
             file: names[i],
+            thumb: thumb,
             width: size ? size.width : 0,
             height: size ? size.height : 0,
             valid: ratioOk,
@@ -312,6 +366,7 @@ function scanLogo() {
     var main = null;
     var display = null;
     var displaySize = 0;
+    var displayIsWebp = false;
     var thumb = null;
     var thumbSize = Infinity;
     var i;
@@ -323,8 +378,14 @@ function scanLogo() {
         var m = name.match(/-(\d+)\.(png|jpe?g|svg|webp)$/i);
         if (m) {
             var size = parseInt(m[1], 10);
-            // 512 一档用于页面展示，其余按最小尺寸作 favicon
-            if (size <= 512 && size > displaySize) { display = name; displaySize = size; }
+            var isWebp = /\.webp$/i.test(name);
+            // 展示图：优先 webp（同等观感下体积约为 png 的十分之一），且不超过 512
+            if (size <= 512) {
+                var better = !display ||
+                    (isWebp && !displayIsWebp) ||
+                    (isWebp === displayIsWebp && size > displaySize);
+                if (better) { display = name; displaySize = size; displayIsWebp = isWebp; }
+            }
             if (size < thumbSize) { thumb = name; thumbSize = size; }
             continue;
         }

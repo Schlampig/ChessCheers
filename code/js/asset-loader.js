@@ -137,6 +137,25 @@
         return encodePath(MANIFEST.boardRoot) + encodeURIComponent(board.file);
     }
 
+    // 棋盘缩略图路径：首页预览用，体积约为原图的十分之一
+    function getBoardThumbPath(boardName) {
+        var board = getBoard(boardName);
+        if (!board) return null;
+        return encodePath(MANIFEST.boardRoot) + encodeURIComponent(board.thumb || board.file);
+    }
+
+    // 棋子静止态预览图路径（tools/make-posters.js 生成的首帧 webp）
+    function getPiecePosterPath(campName, pieceType) {
+        var camp = getCamp(campName);
+        if (!camp) return null;
+        var dir = camp.pieces[pieceDirName(pieceType)];
+        if (!dir || !dir.poster) return null;
+        return encodePath(MANIFEST.pieceRoot) +
+            encodeURIComponent(campName) + '/' +
+            encodeURIComponent(pieceDirName(pieceType)) + '/' +
+            encodeURIComponent(dir.poster);
+    }
+
     // logo 绝对路径（页面展示用，优先中等尺寸，不加载几 MB 的原图）
     function getLogoPath() {
         var logo = getLogo();
@@ -164,7 +183,10 @@
             encodeURIComponent(file);
     }
 
-    // 创建默认态（放置）视觉元素：显示选中素材首帧，不循环
+    // 创建默认态（放置）视觉元素。
+    // 优先使用首帧预览图：一张 webp 只有几 KB，32 个棋子合计不到 200KB；
+    // 若直接用 <video preload="auto"> 取首帧，首屏要拉几十 MB 视频，弱网下无法开局。
+    // 没有预览图时退回原来的视频首帧方案，二者观感一致。
     function createIdleVisual(campName, pieceType, symbolColor) {
         var wrap = document.createElement('div');
         wrap.className = 'piece-visual';
@@ -174,6 +196,12 @@
         symbol.textContent = PIECE_SYMBOLS[String(pieceType).toLowerCase()] || '?';
         symbol.style.color = symbolColor;
         wrap.appendChild(symbol);
+
+        var poster = getPiecePosterPath(campName, pieceType);
+        if (poster) {
+            wrap.appendChild(buildIdleImage(poster, symbol));
+            return wrap;
+        }
 
         var src = getPieceAssetPath(campName, pieceType, 'select', false);
         if (!src) return wrap;
@@ -266,8 +294,9 @@
 
         video.addEventListener('ended', finish);
         video.addEventListener('error', finish);
-        // 安全兜底：素材过长时强制收尾，避免动画拖住棋局
-        setTimeout(finish, 2500);
+        // 安全兜底：动画视频在弱网下可能迟迟下载不完，等待过久会让棋子一直隐身，
+        // 因此 1.2 秒内没播完就收尾，交还给静止态预览图
+        setTimeout(finish, 1200);
         video.addEventListener('loadeddata', function () {
             var p = video.play();
             if (p && p.catch) p.catch(function () {});
@@ -327,15 +356,18 @@
         playSound(getPieceAssetPath(campName, pieceType, state, true));
     }
 
-    // 预热默认态素材：提前拉取，降低首帧等待
+    // 预热静止态素材：有预览图就只预载图（几 KB），没有才预载视频首帧
     function warmUp(campName) {
         var codes = { Pawn: 'p', Rook: 'r', Knight: 'n', Bishop: 'b', Queen: 'q', King: 'k' };
         for (var dir in codes) {
             if (!codes.hasOwnProperty(dir)) continue;
             var key = campName + '/' + dir;
             if (warmCache[key]) continue;
-            var src = getPieceAssetPath(campName, codes[dir], 'select', false);
+
+            var src = getPiecePosterPath(campName, codes[dir]) ||
+                getPieceAssetPath(campName, codes[dir], 'select', false);
             if (!src) continue;
+
             var el;
             if (isVideoPath(src)) {
                 el = document.createElement('video');
@@ -411,6 +443,8 @@
         getLogoPath: getLogoPath,
         getFaviconPath: getFaviconPath,
         getBoardPath: getBoardPath,
+        getBoardThumbPath: getBoardThumbPath,
+        getPiecePosterPath: getPiecePosterPath,
         getPieceAssetPath: getPieceAssetPath,
         getResultAssetPath: getResultAssetPath,
         createIdleVisual: createIdleVisual,

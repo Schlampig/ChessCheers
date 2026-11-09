@@ -1,9 +1,9 @@
 /**
  * ChessCheers 素材清单（由 tools/scan-assets.js 自动生成，请勿手工编辑）
- * 生成时间: 2026-11-09T09:59:40.304Z
+ * 生成时间: 2026-11-09T15:03:49.804Z
  */
 window.CHESS_ASSETS = {
-  "generatedAt": "2026-11-09T09:59:40.304Z",
+  "generatedAt": "2026-11-09T15:03:49.804Z",
   "pieceRoot": "../../data/chesspiece/",
   "boardRoot": "../../data/chessboard/",
   "camps": [
@@ -17,16 +17,20 @@ window.CHESS_ASSETS = {
         "King": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -34,16 +38,20 @@ window.CHESS_ASSETS = {
         "Queen": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -51,16 +59,20 @@ window.CHESS_ASSETS = {
         "Bishop": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -68,16 +80,20 @@ window.CHESS_ASSETS = {
         "Knight": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -85,16 +101,20 @@ window.CHESS_ASSETS = {
         "Rook": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -102,16 +122,20 @@ window.CHESS_ASSETS = {
         "Pawn": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -119,16 +143,16 @@ window.CHESS_ASSETS = {
       },
       "result": {
         "win": {
-          "image": "赢棋.png",
-          "audio": "赢棋.wav"
+          "image": "赢棋.webp",
+          "audio": "赢棋.m4a"
         },
         "lose": {
-          "image": "输棋.png",
-          "audio": "输棋.wav"
+          "image": "输棋.webp",
+          "audio": "输棋.m4a"
         },
         "draw": {
-          "image": "和棋.png",
-          "audio": "和棋.wav"
+          "image": "和棋.webp",
+          "audio": "和棋.m4a"
         }
       }
     },
@@ -142,16 +166,20 @@ window.CHESS_ASSETS = {
         "King": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -159,16 +187,20 @@ window.CHESS_ASSETS = {
         "Queen": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -176,16 +208,20 @@ window.CHESS_ASSETS = {
         "Bishop": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -193,16 +229,20 @@ window.CHESS_ASSETS = {
         "Knight": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -210,16 +250,20 @@ window.CHESS_ASSETS = {
         "Rook": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -227,16 +271,20 @@ window.CHESS_ASSETS = {
         "Pawn": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -244,16 +292,16 @@ window.CHESS_ASSETS = {
       },
       "result": {
         "win": {
-          "image": "赢棋.png",
-          "audio": "赢棋.wav"
+          "image": "赢棋.webp",
+          "audio": "赢棋.m4a"
         },
         "lose": {
-          "image": "输棋.png",
-          "audio": "输棋.wav"
+          "image": "输棋.webp",
+          "audio": "输棋.m4a"
         },
         "draw": {
-          "image": "和棋.png",
-          "audio": "和棋.wav"
+          "image": "和棋.webp",
+          "audio": "和棋.m4a"
         }
       }
     },
@@ -267,16 +315,20 @@ window.CHESS_ASSETS = {
         "King": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -284,16 +336,20 @@ window.CHESS_ASSETS = {
         "Queen": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -301,16 +357,20 @@ window.CHESS_ASSETS = {
         "Bishop": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -318,16 +378,20 @@ window.CHESS_ASSETS = {
         "Knight": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -335,16 +399,20 @@ window.CHESS_ASSETS = {
         "Rook": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -352,16 +420,20 @@ window.CHESS_ASSETS = {
         "Pawn": {
           "select": {
             "video": "选中.webm",
-            "audio": "选中.wav"
+            "audio": "选中.m4a",
+            "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "落子.wav"
+            "audio": "落子.m4a",
+            "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": "被吃.wav"
+            "audio": "被吃.m4a",
+            "poster": "预览.webp"
           },
+          "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
           "audioCount": 3
@@ -369,15 +441,15 @@ window.CHESS_ASSETS = {
       },
       "result": {
         "win": {
-          "image": "赢棋.png",
-          "audio": "赢棋.wav"
+          "image": "赢棋.webp",
+          "audio": "赢棋.m4a"
         },
         "lose": {
-          "image": "输棋.png",
+          "image": "输棋.webp",
           "audio": "输棋.m4a"
         },
         "draw": {
-          "image": "和棋.png",
+          "image": "和棋.webp",
           "audio": "和棋.m4a"
         }
       }
@@ -386,49 +458,55 @@ window.CHESS_ASSETS = {
   "boards": [
     {
       "name": "原木",
-      "file": "原木.png",
-      "width": 1668,
-      "height": 1676,
+      "file": "原木.webp",
+      "thumb": "原木-mini.webp",
+      "width": 1019,
+      "height": 1024,
       "valid": true,
       "reason": ""
     },
     {
       "name": "标准",
-      "file": "标准.png",
-      "width": 1620,
-      "height": 1624,
+      "file": "标准.webp",
+      "thumb": "标准-mini.webp",
+      "width": 1021,
+      "height": 1024,
       "valid": true,
       "reason": ""
     },
     {
       "name": "毛绒",
-      "file": "毛绒.png",
-      "width": 1648,
-      "height": 1664,
+      "file": "毛绒.webp",
+      "thumb": "毛绒-mini.webp",
+      "width": 1014,
+      "height": 1024,
       "valid": true,
       "reason": ""
     },
     {
       "name": "深海",
-      "file": "深海.png",
-      "width": 1652,
-      "height": 1668,
+      "file": "深海.webp",
+      "thumb": "深海-mini.webp",
+      "width": 1014,
+      "height": 1023,
       "valid": true,
       "reason": ""
     },
     {
       "name": "猩红",
-      "file": "猩红.png",
-      "width": 1496,
-      "height": 1510,
+      "file": "猩红.webp",
+      "thumb": "猩红-mini.webp",
+      "width": 1014,
+      "height": 1024,
       "valid": true,
       "reason": ""
     },
     {
       "name": "雪境",
-      "file": "雪境.png",
-      "width": 1670,
-      "height": 1682,
+      "file": "雪境.webp",
+      "thumb": "雪境-mini.webp",
+      "width": 1016,
+      "height": 1023,
       "valid": true,
       "reason": ""
     }
@@ -436,8 +514,8 @@ window.CHESS_ASSETS = {
   "logo": {
     "file": "ChessCheers_logo.png",
     "path": "../../data/chesslogo/ChessCheers_logo.png",
-    "displayFile": "ChessCheers_logo-512.png",
-    "displayPath": "../../data/chesslogo/ChessCheers_logo-512.png",
+    "displayFile": "ChessCheers_logo-384.webp",
+    "displayPath": "../../data/chesslogo/ChessCheers_logo-384.webp",
     "thumbFile": "ChessCheers_logo-128.png",
     "thumbPath": "../../data/chesslogo/ChessCheers_logo-128.png"
   },

@@ -21,7 +21,7 @@
     var BOARDS_OK = true;
 
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202611091928';
+    var BUILD = '202611092303';
 
     var dom = {};
 
@@ -203,15 +203,15 @@
 
     function updateBoardPreview() {
         var name = dom.boardSelect.value;
-        var src = window.AssetLoader.getBoardPath(name);
+        // 预览用小图：首页没必要为一张缩略图拉几百 KB 的原图
+        var src = window.AssetLoader.getBoardThumbPath
+            ? window.AssetLoader.getBoardThumbPath(name)
+            : window.AssetLoader.getBoardPath(name);
         if (!src) return;
         dom.boardPreview.className = 'board-preview';
         dom.boardPreview.style.backgroundImage = 'url("' + src + '")';
         dom.boardPreview.textContent = '';
-        var board = window.AssetLoader.getBoard(name);
-        var text = board && board.width
-            ? name + '（' + board.width + '×' + board.height + '）'
-            : name;
+        var text = name;
         // 提示被规范检查跳过的棋盘，方便作者修正
         var bad = window.AssetLoader.getInvalidBoards ? window.AssetLoader.getInvalidBoards() : [];
         if (bad.length) {

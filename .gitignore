@@ -25,6 +25,9 @@ package-lock.json
 # 开发进度日志：逐阶段实现细节与排错过程
 dev_log.txt
 
+# 素材瘦身前的原始文件备份（体积大，不参与发布）
+.assets-original/
+
 # 设计过程草稿（roadmap、方案迭代稿、AI 对话整理、设计过程 docx/pdf）
 doc/idea/
 
