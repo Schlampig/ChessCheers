@@ -248,7 +248,7 @@ Boards must be strictly 1:1 (square). The terminal prints the reason on startup,
 It needs all six folders — `King`, `Queen`, `Bishop`, `Knight`, `Rook`, `Pawn` — and each must contain at least one visual asset (webm/gif/png/jpg).
 
 **Q: The AI is too slow / too fast.**
-Higher difficulty means deeper search and longer thinking. Low tiers take about 0.5s, the highest about 2s.
+Higher difficulty means deeper search and longer thinking. Low tiers take about 0.7s, the highest about 2s.
 
 ---
 

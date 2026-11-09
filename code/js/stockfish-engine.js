@@ -14,16 +14,35 @@
 
     var WORKER_PATH = '../js/stockfish.wasm.js';
 
-    // ELO 档位 -> 搜索深度 / 技能等级 / 最短思考毫秒（PRD 二.2 与六.2）
+    /**
+     * 难度阶梯：按「分数段下界」对齐首页的七档选项，强度三项指标同步单调递增。
+     * - min 为该档起始分（首页下拉的 value 就是它），比它小的档位不会命中；
+     * - depth 与 skill 同向递增：只降深度不降 skill，引擎仍会精准选子；
+     *   只降 skill 不降深度，弱档位又会因为看得太深而显得不像「新手」；
+     * - Skill Level 是本引擎唯一可用的强度开关（该构建不提供 UCI_Elo /
+     *   UCI_LimitStrength），因此低档位同时压低深度与技能等级，高档位才放开。
+     */
     var ELO_LEVELS = [
-        { max: 500, depth: 5, skill: 1, minThink: 500, label: '初生牛犊' },
-        { max: 1000, depth: 8, skill: 5, minThink: 700, label: '灵机一动' },
-        { max: 1500, depth: 12, skill: 10, minThink: 900, label: '激流勇进' },
-        { max: 2000, depth: 15, skill: 14, minThink: 1200, label: '福至心灵' },
-        { max: 2500, depth: 18, skill: 17, minThink: 1500, label: '行云流水' },
-        { max: 3000, depth: 20, skill: 20, minThink: 1800, label: '随心所欲' },
-        { max: Infinity, depth: 20, skill: 20, minThink: 2000, label: '返璞归真' }
+        { min: 0,    depth: 3,  skill: 0,  minThink: 700,  label: '初生牛犊' },
+        { min: 600,  depth: 6,  skill: 3,  minThink: 800,  label: '灵机一动' },
+        { min: 1100, depth: 9,  skill: 6,  minThink: 1000, label: '激流勇进' },
+        { min: 1600, depth: 12, skill: 10, minThink: 1200, label: '福至心灵' },
+        { min: 2100, depth: 15, skill: 14, minThink: 1500, label: '行云流水' },
+        { min: 2600, depth: 18, skill: 18, minThink: 1800, label: '随心所欲' },
+        { min: 3000, depth: 20, skill: 20, minThink: 2000, label: '返璞归真' }
     ];
+
+    // 按分数段取档位：取「起始分不超过给定值」的最高一档，
+    // 保证分值越高档位越强，最高档（3000 以上）不会被前一档截走。
+    function levelOf(elo) {
+        var n = parseInt(elo, 10);
+        if (isNaN(n)) n = 600;
+        var level = ELO_LEVELS[0];
+        for (var i = 0; i < ELO_LEVELS.length; i++) {
+            if (n >= ELO_LEVELS[i].min) level = ELO_LEVELS[i];
+        }
+        return level;
+    }
 
     var worker = null;
     var ready = false;
@@ -34,16 +53,6 @@
     var onBestMove = null;
     var onReadyCb = null;
     var onErrorCb = null;
-
-    // 按 ELO 取档位
-    function levelOf(elo) {
-        var n = parseInt(elo, 10);
-        if (isNaN(n)) n = 600;
-        for (var i = 0; i < ELO_LEVELS.length; i++) {
-            if (n <= ELO_LEVELS[i].max) return ELO_LEVELS[i];
-        }
-        return ELO_LEVELS[ELO_LEVELS.length - 1];
-    }
 
     function send(cmd) {
         if (!worker) return;

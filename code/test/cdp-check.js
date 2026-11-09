@@ -226,7 +226,10 @@ function playSequence(moves) {
 function pieceAtSquare(sq) {
     return evaluate('(function(){var e=document.querySelector(' +
         '\'#piece-layer .piece[data-square="' + sq + '"]\');' +
-        'return e?{c:e.getAttribute("data-color"),t:e.getAttribute("data-type")}:null;})()');
+        'if(!e)return null;' +
+        'var m=e.querySelector("img.piece-video,video.piece-video");' +
+        'return {c:e.getAttribute("data-color"),t:e.getAttribute("data-type"),' +
+        's:decodeURIComponent(m?(m.getAttribute("src")||""):"")};})()');
 }
 
 function PVP_URL() {
@@ -425,8 +428,10 @@ function runPromotionTest() {
         .then(function () { return sleep(2200); })
         .then(function () { return pieceAtSquare('g8'); })
         .then(function (p) {
-            console.log('   g8=' + JSON.stringify(p) + '（应为白后）');
-            console.log(p && p.t === 'q' && p.c === 'w' ? '✅ 升变为皇后成功' : '❌ 升变结果错误');
+            console.log('   g8=' + JSON.stringify(p) + '（应为白后，且用白方阵营素材）');
+            var ok = !!p && p.t === 'q' && p.c === 'w' &&
+                /明日方舟_喀兰\/Queen/.test(p.s || '');
+            console.log(ok ? '✅ 升变为皇后成功（颜色与阵营均属本方）' : '❌ 升变结果错误');
             return moveText();
         })
         .then(function (t) { console.log('   棋谱: ' + t); })

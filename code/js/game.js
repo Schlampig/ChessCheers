@@ -22,7 +22,7 @@
     var DRAG_THRESHOLD = 4;          // 拖拽判定阈值（像素）
     var STORAGE_KEY = 'chesscheers_last_game';
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202611091759';
+    var BUILD = '202611091928';
 
     // ---------- 运行时状态 ----------
     var state = {
@@ -51,8 +51,14 @@
     // ==================== 工具 ====================
     function $(id) { return document.getElementById(id); }
 
+    // 棋子颜色统一为 'w' / 'b'。棋盘之外的颜色值（如某些构建返回大写或缺失）
+    // 一律按白方处理，避免异常值把棋子渲染成对方阵营的素材。
+    function normalizeColor(color) {
+        return String(color).toLowerCase() === 'b' ? 'b' : 'w';
+    }
+
     function campOf(color) {
-        return color === 'w' ? state.whiteCamp : state.blackCamp;
+        return normalizeColor(color) === 'b' ? state.blackCamp : state.whiteCamp;
     }
 
     function colorName(color) {
@@ -236,11 +242,12 @@
     function createPieceEl(piece, sq) {
         var el = document.createElement('div');
         el.className = 'piece';
+        var color = normalizeColor(piece.color);
         el.setAttribute('data-square', sq);
-        el.setAttribute('data-color', piece.color);
+        el.setAttribute('data-color', color);
         el.setAttribute('data-type', piece.type);
         var visual = window.AssetLoader.createIdleVisual(
-            campOf(piece.color), piece.type, piece.color === 'w' ? '#f5f7ff' : '#2b2f45'
+            campOf(color), piece.type, color === 'w' ? '#f5f7ff' : '#2b2f45'
         );
         el.appendChild(visual);
         placeAt(el, sq);
@@ -563,11 +570,20 @@
 
         state.locked = false;
         if (ctx.isPromotion) {
-            renderPieces();          // 升变后类型已变，立即重建保持 DOM 与逻辑一致
-            playPromotionArrival(result.to);
+            renderPromotedPiece(result);
+            playPromotionArrival(result);
         } else {
             evaluateNext();
         }
+    }
+
+    // 升变后的棋子直接按「走子方颜色 + 新棋子类型」重建。
+    // 不走棋盘查询，保证升变出来的棋子一定属于走子方，不会取到对方阵营素材。
+    function renderPromotedPiece(result) {
+        var color = normalizeColor(result.color);
+        var type = result.promotion || 'q';
+        removeElAt(result.to);
+        dom.pieceLayer.appendChild(createPieceEl({ color: color, type: type }, result.to));
     }
 
     // 落子/被吃/易位同时编排：吃子方层级在上、被吃方压在下方，
@@ -648,12 +664,14 @@
     }
 
     // 升变抵达：播放新棋子选中动画一遍后归位（PRD 四.3 升变条）
-    function playPromotionArrival(sq) {
-        var piece = pieceAt(sq);
-        if (!piece) { evaluateNext(); return; }
-        hideVisual(pieceElAt(sq));
+    // 阵营与棋子类型取自走法结果，与静态棋子保持一致
+    function playPromotionArrival(result) {
+        var sq = result.to;
+        var el = pieceElAt(sq);
+        if (!el) { evaluateNext(); return; }
+        hideVisual(el);
         var gen = fxGen;
-        playFx(sq, campOf(piece.color), piece.type, 'select', 3, function () {
+        playFx(sq, campOf(result.color), result.promotion || 'q', 'select', 3, function () {
             if (gen !== fxGen) return;
             clearFx();
             restoreVisuals();
