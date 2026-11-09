@@ -56,6 +56,8 @@
     // 引擎就绪前收到的分析请求。引擎是 640KB 的 wasm，弱网下要十几秒才可用，
     // 这期间玩家很可能已经走了一步——请求先排队，就绪后自动补发，避免 AI 漏走。
     var pendingAnalyses = [];
+    // 正在计算或排队中的局面，用于识别同一局面的重复请求
+    var currentFen = null;
 
     function send(cmd) {
         if (!worker) return;
@@ -111,9 +113,14 @@
         var move = parts[1] || '';
         var cb = onBestMove;
         onBestMove = null;
+        currentFen = null;
+
+        // 没有等待中的回调：这是被新请求取代的过期结果，直接丢弃。
+        // （否则会清掉新请求的定时器，导致回调永远不触发）
+        if (!cb) return;
 
         if (!move || move === '(none)') {
-            if (cb) cb(null);
+            cb(null);
             return;
         }
 
@@ -122,7 +129,7 @@
         if (pendingTimer) clearTimeout(pendingTimer);
         pendingTimer = setTimeout(function () {
             pendingTimer = null;
-            if (cb) cb(move);
+            cb(move);
         }, wait);
     }
 
@@ -191,6 +198,19 @@
             if (callback) callback(null);
             return false;
         }
+
+        // 同一局面的重复请求：引擎刚就绪时，队列补发与 onReady 回调会各触发一次，
+        // 这里只替换回调，避免同一局面被搜索两遍、产生两个 bestmove
+        if (currentFen === fen) {
+            if (!ready && pendingAnalyses.length) {
+                pendingAnalyses[pendingAnalyses.length - 1].cb = callback;
+            } else {
+                onBestMove = callback;
+            }
+            return true;
+        }
+        currentFen = fen;
+
         if (!ready) {
             // 引擎还在下载/初始化：排队等待，就绪后自动补发
             console.log('[StockfishEngine] 引擎未就绪，本次分析已排队');
