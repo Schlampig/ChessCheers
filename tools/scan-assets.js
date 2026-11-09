@@ -88,42 +88,54 @@ function listFiles(dir, exts) {
 function mapStates(files, stateDefs) {
     var result = {};
     var used = {};
-    var i, j;
 
-    // 第一轮：文件名匹配
-    for (i = 0; i < stateDefs.length; i++) {
-        for (j = 0; j < files.length; j++) {
+    matchByName(files, stateDefs, result, used);
+    fillUnmatched(files, stateDefs, result, used);
+    applyFallback(stateDefs, result);
+    return result;
+}
+
+// 第一轮：文件名前缀匹配
+function matchByName(files, stateDefs, result, used) {
+    for (var i = 0; i < stateDefs.length; i++) {
+        for (var j = 0; j < files.length; j++) {
             if (used[files[j]]) continue;
-            var hit = false;
-            for (var k = 0; k < stateDefs[i].names.length; k++) {
-                if (files[j].indexOf(stateDefs[i].names[k]) === 0) {
-                    hit = true;
-                    break;
-                }
-            }
-            if (hit) {
+            if (startsWithAny(files[j], stateDefs[i].names)) {
                 result[stateDefs[i].key] = files[j];
                 used[files[j]] = true;
                 break;
             }
         }
     }
+}
 
-    // 第二轮：按文件顺序填充未匹配的状态
+function startsWithAny(name, prefixes) {
+    for (var i = 0; i < prefixes.length; i++) {
+        if (name.indexOf(prefixes[i]) === 0) return true;
+    }
+    return false;
+}
+
+// 第二轮：按文件顺序填充未匹配的状态
+function fillUnmatched(files, stateDefs, result, used) {
     var unused = [];
+    var i;
     for (i = 0; i < files.length; i++) {
         if (!used[files[i]]) unused.push(files[i]);
     }
     var cursor = 0;
     for (i = 0; i < stateDefs.length; i++) {
         if (result[stateDefs[i].key]) continue;
-        if (unused.length === 0) break;
+        if (!unused.length) break;
         result[stateDefs[i].key] = unused[cursor % unused.length];
         cursor++;
     }
+}
 
-    // 第三轮：仍为空则循环复用已有素材
+// 第三轮：仍为空时循环复用已有素材，避免出现空棋子
+function applyFallback(stateDefs, result) {
     var fallback = null;
+    var i;
     for (i = 0; i < stateDefs.length; i++) {
         if (result[stateDefs[i].key]) {
             fallback = result[stateDefs[i].key];
@@ -133,8 +145,6 @@ function mapStates(files, stateDefs) {
     for (i = 0; i < stateDefs.length; i++) {
         if (!result[stateDefs[i].key]) result[stateDefs[i].key] = fallback;
     }
-
-    return result;
 }
 
 // 扫描单个棋子目录
@@ -202,12 +212,10 @@ function scanCamp(name) {
     var campPath = path.join(PIECE_DIR, name);
     var missing = [];
     var pieces = {};
-    var i;
 
-    for (i = 0; i < REQUIRED_PIECES.length; i++) {
+    for (var i = 0; i < REQUIRED_PIECES.length; i++) {
         var p = REQUIRED_PIECES[i];
-        var dir = path.join(campPath, p);
-        if (!isDir(dir)) {
+        if (!isDir(path.join(campPath, p))) {
             missing.push(p);
             continue;
         }
@@ -216,13 +224,26 @@ function scanCamp(name) {
         pieces[p] = entry;
     }
 
-    var intro = '';
-    var introPath = path.join(campPath, '阵营介绍.md');
-    if (fs.existsSync(introPath)) {
-        intro = fs.readFileSync(introPath, 'utf8');
-    }
-
     var result = scanOutcome(campPath);
+    return {
+        name: name,
+        intro: readIntro(campPath),
+        valid: missing.length === 0,
+        missing: missing,
+        reasons: collectReasons(missing, result),
+        pieces: pieces,
+        result: result
+    };
+}
+
+// 阵营介绍：可选文件，缺失时为空串
+function readIntro(campPath) {
+    var introPath = path.join(campPath, '阵营介绍.md');
+    return fs.existsSync(introPath) ? fs.readFileSync(introPath, 'utf8') : '';
+}
+
+// 规范检查结论：缺棋子会阻断，缺结算素材只提示
+function collectReasons(missing, result) {
     var reasons = [];
     if (missing.length) {
         reasons.push('缺少可用棋子：' + missing.join('、') +
@@ -233,16 +254,7 @@ function scanCamp(name) {
             reasons.push('结算动画「' + k + '」无素材（可用，但会退回灰色弹窗）');
         }
     });
-
-    return {
-        name: name,
-        intro: intro,
-        valid: missing.length === 0,
-        missing: missing,
-        reasons: reasons,
-        pieces: pieces,
-        result: result
-    };
+    return reasons;
 }
 
 // 读取 PNG 尺寸
@@ -316,44 +328,46 @@ function scanBoards() {
     if (!isDir(BOARD_DIR)) return out;
     var names = fs.readdirSync(BOARD_DIR).sort();
     for (var i = 0; i < names.length; i++) {
-        if (names[i].charAt(0) === '.') continue;
-        var ext = extOf(names[i]);
-        if (BOARD_EXT.indexOf(ext) < 0) continue;
-        var base = names[i].slice(0, names[i].length - ext.length);
-        // 首页预览用的缩略图不是一张独立棋盘
-        if (base.slice(-BOARD_MINI_SUFFIX.length) === BOARD_MINI_SUFFIX) continue;
-
-        var full = path.join(BOARD_DIR, names[i]);
-        var size = imageSize(full);
-        var ratioOk = true;
-        var reason = '';
-
-        if (!size) {
-            ratioOk = false;
-            reason = '无法读取图片尺寸，请确认文件未损坏';
-        } else {
-            var ratio = size.width / size.height;
-            if (Math.abs(ratio - 1) > RATIO_TOLERANCE) {
-                ratioOk = false;
-                reason = '长宽比必须为 1:1，当前 ' + size.width + '×' + size.height;
-            }
-        }
-
-        // 缩略图：优先同名 -mini，其次退回原图
-        var miniName = base + BOARD_MINI_SUFFIX + '.webp';
-        var thumb = fs.existsSync(path.join(BOARD_DIR, miniName)) ? miniName : names[i];
-
-        out.push({
-            name: base,
-            file: names[i],
-            thumb: thumb,
-            width: size ? size.width : 0,
-            height: size ? size.height : 0,
-            valid: ratioOk,
-            reason: reason
-        });
+        var entry = boardEntry(names[i]);
+        if (entry) out.push(entry);
     }
     return out;
+}
+
+// 单个棋盘：过滤非图片与缩略图，并校验长宽比
+function boardEntry(fileName) {
+    if (fileName.charAt(0) === '.') return null;
+    var ext = extOf(fileName);
+    if (BOARD_EXT.indexOf(ext) < 0) return null;
+    var base = fileName.slice(0, fileName.length - ext.length);
+    // 首页预览用的缩略图不是一张独立棋盘
+    if (base.slice(-BOARD_MINI_SUFFIX.length) === BOARD_MINI_SUFFIX) return null;
+
+    var size = imageSize(path.join(BOARD_DIR, fileName));
+    var check = checkSquare(size);
+    var miniName = base + BOARD_MINI_SUFFIX + '.webp';
+    var thumb = fs.existsSync(path.join(BOARD_DIR, miniName)) ? miniName : fileName;
+
+    return {
+        name: base,
+        file: fileName,
+        thumb: thumb,
+        width: size ? size.width : 0,
+        height: size ? size.height : 0,
+        valid: check.valid,
+        reason: check.reason
+    };
+}
+
+function checkSquare(size) {
+    if (!size) {
+        return { valid: false, reason: '无法读取图片尺寸，请确认文件未损坏' };
+    }
+    var ratio = size.width / size.height;
+    if (Math.abs(ratio - 1) > RATIO_TOLERANCE) {
+        return { valid: false, reason: '长宽比必须为 1:1，当前 ' + size.width + '×' + size.height };
+    }
+    return { valid: true, reason: '' };
 }
 
 // 扫描项目 logo（data/chesslogo/）
@@ -363,38 +377,10 @@ function scanLogo() {
     var files = listFiles(LOGO_DIR, LOGO_EXT);
     if (!files.length) return null;
 
-    var main = null;
-    var display = null;
-    var displaySize = 0;
-    var displayIsWebp = false;
-    var thumb = null;
-    var thumbSize = Infinity;
-    var i;
-
-    for (i = 0; i < files.length; i++) {
-        var name = files[i];
-        if (!/logo/i.test(name)) continue;
-
-        var m = name.match(/-(\d+)\.(png|jpe?g|svg|webp)$/i);
-        if (m) {
-            var size = parseInt(m[1], 10);
-            var isWebp = /\.webp$/i.test(name);
-            // 展示图：优先 webp（同等观感下体积约为 png 的十分之一），且不超过 512
-            if (size <= 512) {
-                var better = !display ||
-                    (isWebp && !displayIsWebp) ||
-                    (isWebp === displayIsWebp && size > displaySize);
-                if (better) { display = name; displaySize = size; displayIsWebp = isWebp; }
-            }
-            if (size < thumbSize) { thumb = name; thumbSize = size; }
-            continue;
-        }
-        if (!main) main = name;
-    }
-
-    if (!main) main = files[0];
-    if (!display) display = main;
-    if (!thumb) thumb = display;
+    var pick = pickLogoFiles(files);
+    var main = pick.main || files[0];
+    var display = pick.display || main;
+    var thumb = pick.thumb || display;
 
     return {
         file: main,
@@ -404,6 +390,40 @@ function scanLogo() {
         thumbFile: thumb,
         thumbPath: '../../data/chesslogo/' + thumb
     };
+}
+
+// 从 logo 目录中挑出三档：原图 / 展示图 / 图标
+function pickLogoFiles(files) {
+    var main = null;
+    var display = null;
+    var thumb = null;
+    var thumbSize = Infinity;
+
+    for (var i = 0; i < files.length; i++) {
+        var name = files[i];
+        if (!/logo/i.test(name)) continue;
+
+        var m = name.match(/-(\d+)\.(png|jpe?g|svg|webp)$/i);
+        if (!m) {
+            if (!main) main = name;
+            continue;
+        }
+        var size = parseInt(m[1], 10);
+        if (size <= 512 && isBetterDisplay(name, size, display)) display = name;
+        if (size < thumbSize) { thumb = name; thumbSize = size; }
+    }
+
+    return { main: main, display: display, thumb: thumb };
+}
+
+// 展示图偏好：webp 优先（体积约为 png 的十分之一），同类取尺寸更大者
+function isBetterDisplay(name, size, current) {
+    if (!current) return true;
+    var isWebp = /\.webp$/i.test(name);
+    var curWebp = /\.webp$/i.test(current);
+    if (isWebp !== curWebp) return isWebp;
+    var m = current.match(/-(\d+)\./);
+    return !m || size > parseInt(m[1], 10);
 }
 
 function buildPayload() {

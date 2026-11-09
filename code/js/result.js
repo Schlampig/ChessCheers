@@ -15,7 +15,7 @@
 
     var STORAGE_KEY = 'chesscheers_last_game';
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202611100036';
+    var BUILD = '202611100131';
 
     // ELO 档位名（与首页一致）
     var ELO_NAMES = {
@@ -174,6 +174,27 @@
         toastTimer = setTimeout(function () { dom.toast.className = 'toast'; }, 2400);
     }
 
+    // 把素材挂到卡片与整页背景上
+    function applyAssetVisual(src) {
+        if (dom.content) dom.content.classList.add('with-asset');
+        if (dom.assetImg) {
+            dom.assetImg.src = src;
+            // 下一帧再加类，确保淡入与轻微缩放能被触发
+            window.requestAnimationFrame(function () {
+                dom.assetImg.classList.add('is-visible');
+            });
+        } else if (dom.asset) {
+            // 兼容旧版 DOM：没有 img 元素时退回背景图
+            dom.asset.style.backgroundImage = 'url("' + src + '")';
+            dom.asset.style.backgroundSize = 'contain';
+            dom.asset.style.backgroundRepeat = 'no-repeat';
+            dom.asset.style.backgroundPosition = 'center';
+        }
+        // 素材同时作为整页虚化背景，营造结算氛围
+        document.documentElement.style.setProperty('--result-bg', 'url("' + src + '")');
+        document.body.classList.add('has-result-bg');
+    }
+
     // 加载结算图与语音；失败则退回无素材布局（PRD 三.4）
     function loadAsset() {
         var camp = assetCamp();
@@ -184,23 +205,7 @@
 
         var img = new Image();
         img.onload = function () {
-            if (dom.content) dom.content.classList.add('with-asset');
-            if (dom.assetImg) {
-                dom.assetImg.src = src;
-                // 下一帧再加类，确保淡入与轻微缩放能被触发
-                window.requestAnimationFrame(function () {
-                    dom.assetImg.classList.add('is-visible');
-                });
-            } else if (dom.asset) {
-                // 兼容旧版 DOM：没有 img 元素时退回背景图
-                dom.asset.style.backgroundImage = 'url("' + src + '")';
-                dom.asset.style.backgroundSize = 'contain';
-                dom.asset.style.backgroundRepeat = 'no-repeat';
-                dom.asset.style.backgroundPosition = 'center';
-            }
-            // 素材同时作为整页虚化背景，营造结算氛围
-            document.documentElement.style.setProperty('--result-bg', 'url("' + src + '")');
-            document.body.classList.add('has-result-bg');
+            applyAssetVisual(src);
             playVoice(camp, key);
         };
         img.onerror = function () {
@@ -349,7 +354,7 @@
         } catch (e) {
             console.warn('[result] 渲染异常，已降级', e);
         }
-        console.log('[result] 渲染完成', state);
+        console.log('[result] 渲染完成：' + state.mode + ' / ' + state.outcome);
     }
 
     if (document.readyState === 'loading') {

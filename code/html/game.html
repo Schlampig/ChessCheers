@@ -1,11 +1,19 @@
 <!DOCTYPE html>
+<!--
+  ChessCheers — 对弈页
+  结构：棋盘区（顶栏 / 坐标 / 棋盘 / 升变弹窗）→ 侧边栏（棋谱与操作按钮）
+        → 折叠把手 → 提示条
+  依赖：css/game.css、js/assets.js、js/asset-loader.js、js/stockfish-engine.js、js/game.js
+  说明：棋盘与棋子由 JS 按素材清单生成；坐标、标记与动画层均为独立图层，
+        逻辑格号与视口坐标分离，以支持人机执黑时的棋盘翻转。
+-->
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ChessCheers - 对弈</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%99%9E%3C/text%3E%3C/svg%3E">
-    <link rel="stylesheet" href="../css/game.css?v=202611100036">
+    <link rel="stylesheet" href="../css/game.css?v=202611100131">
 </head>
 <body>
     <div class="game-container" id="game-container">
@@ -80,10 +88,10 @@
         </div>
     </div>
 
-    <script src="../js/assets.js?v=202611100036"></script>
-    <script src="../js/asset-loader.js?v=202611100036"></script>
-    <script src="../js/chess.min.js?v=202611100036"></script>
-    <script src="../js/stockfish-engine.js?v=202611100036"></script>
-    <script src="../js/game.js?v=202611100036"></script>
+    <script src="../js/assets.js?v=202611100131"></script>
+    <script src="../js/asset-loader.js?v=202611100131"></script>
+    <script src="../js/chess.min.js?v=202611100131"></script>
+    <script src="../js/stockfish-engine.js?v=202611100131"></script>
+    <script src="../js/game.js?v=202611100131"></script>
 </body>
 </html>

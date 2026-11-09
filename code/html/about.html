@@ -1,10 +1,17 @@
 <!DOCTYPE html>
+<!--
+  ChessCheers — 「了解更多」阅读页
+  结构：顶部菜单（目录开关 / 语言切换 / 返回）→ 左侧目录 → 正文
+  依赖：css/about.css、js/about.js；正文由 doc/intro/ 下的 Markdown 渲染
+  说明：不引入 Markdown 库，使用逐行状态机解析，覆盖标题、列表、引用、
+        代码块与链接；正文行宽与目录宽度受控，保证长文可读。
+-->
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChessCheers - 了解更多</title>
-    <link rel="stylesheet" href="../css/about.css?v=202611100036">
+    <link rel="stylesheet" href="../css/about.css?v=202611100131">
 </head>
 <body>
     <!-- 顶部菜单栏 -->
@@ -30,6 +37,6 @@
     <!-- 返回顶部按钮 -->
     <button class="back-to-top" id="back-to-top">↑</button>
 
-    <script src="../js/about.js?v=202611100036"></script>
+    <script src="../js/about.js?v=202611100131"></script>
 </body>
 </html>

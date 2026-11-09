@@ -119,6 +119,38 @@ function openBrowser(port) {
     } catch (e) { /* 打不开就算了 */ }
 }
 
+function runScan() {
+    console.log('  正在检查 data/ 下的素材…');
+    console.log('');
+    try {
+        require('./scan-assets.js').scan();
+    } catch (e) {
+        console.error('  素材扫描失败：' + e.message);
+        console.error('  将以现有清单继续启动（可用 -s 参数跳过扫描）');
+    }
+    console.log('');
+}
+
+function startServer(port) {
+    var server = http.createServer(handle);
+    server.listen(port, '127.0.0.1', function () {
+        console.log('  访问地址: http://127.0.0.1:' + port + '/');
+        console.log('  停止服务: Ctrl + C');
+        console.log('==============================================');
+        console.log('');
+        if (process.env.CC_NO_OPEN !== '1') openBrowser(port);
+    });
+
+    server.on('error', function (e) {
+        if (e.code === 'EADDRINUSE') {
+            console.error('  端口 ' + port + ' 已被占用，请换一个：node tools/serve.js 8080');
+        } else {
+            console.error('  服务启动失败：' + e.message);
+        }
+        process.exit(1);
+    });
+}
+
 function main() {
     var opts = parseArgs();
 
@@ -126,35 +158,8 @@ function main() {
     console.log('  ChessCheers 本地预览');
     console.log('==============================================');
 
-    if (!opts.skipScan) {
-        console.log('  正在检查 data/ 下的素材…');
-        console.log('');
-        try {
-            require('./scan-assets.js').scan();
-        } catch (e) {
-            console.error('  素材扫描失败：' + e.message);
-            console.error('  将以现有清单继续启动（可用 -s 参数跳过扫描）');
-        }
-        console.log('');
-    }
-
-    var server = http.createServer(handle);
-    server.listen(opts.port, '127.0.0.1', function () {
-        console.log('  访问地址: http://127.0.0.1:' + opts.port + '/');
-        console.log('  停止服务: Ctrl + C');
-        console.log('==============================================');
-        console.log('');
-        if (process.env.CC_NO_OPEN !== '1') openBrowser(opts.port);
-    });
-
-    server.on('error', function (e) {
-        if (e.code === 'EADDRINUSE') {
-            console.error('  端口 ' + opts.port + ' 已被占用，请换一个：node tools/serve.js 8080');
-        } else {
-            console.error('  服务启动失败：' + e.message);
-        }
-        process.exit(1);
-    });
+    if (!opts.skipScan) runScan();
+    startServer(opts.port);
 }
 
 main();

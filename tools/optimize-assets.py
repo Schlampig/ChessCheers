@@ -4,7 +4,7 @@
 做三件事（只处理 data/ 下的素材，不动代码）：
   1. 棋盘：<名字>.png|jpg → <名字>.webp（长边 1024）+ <名字>-mini.webp（长边 480，首页预览用）
   2. 结算图：结算动画/<结局>/<图>.png → 同名 .webp（长边 1600）
-  3. 音频：*.wav → 同名 .m4a（AAC 64k，需要 macOS 的 afconvert）
+  3. 音频：*.wav → 同名 .m4a（AAC 40k 单声道，需要 macOS 的 afconvert）
 转换成功后才删除原文件；原始素材请事先自行备份。
 
 为什么需要：GitHub Pages 的出口带宽有限，原始素材总量 130MB+，
@@ -39,7 +39,7 @@ BOARD_Q = 84
 BOARD_MINI_Q = 80
 RESULT_MAX = 1600
 RESULT_Q = 84
-AUDIO_BITRATE = 64000
+AUDIO_BITRATE = 40000
 
 DRY = '--dry-run' in sys.argv
 
@@ -109,6 +109,19 @@ def convert_results():
     print('  小计：%s → %s\n' % (human(total_before), human(total_after)))
 
 
+def encode_m4a(afconvert, src, dst):
+    """优先转单声道；个别素材不接受声道参数时退回原声道，避免整条转换失败。"""
+    base = [afconvert, '-f', 'm4af', '-d', 'aac', '-b', str(AUDIO_BITRATE)]
+    for extra in (['-c', '1'], []):
+        if os.path.exists(dst):
+            os.remove(dst)
+        subprocess.run(base + extra + [src, dst], check=False,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if os.path.exists(dst) and os.path.getsize(dst) > 0:
+            return True
+    return False
+
+
 def convert_audio():
     print('=== 音频 ===')
     afconvert = shutil.which('afconvert')
@@ -122,9 +135,7 @@ def convert_audio():
         if DRY:
             print('  %-52s %8s → (dry)' % (os.path.relpath(src, PIECE_DIR), human(before)))
             continue
-        subprocess.run([afconvert, '-f', 'm4af', '-d', 'aac', '-b', str(AUDIO_BITRATE),
-                        src, dst], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if os.path.exists(dst) and os.path.getsize(dst) > 0:
+        if encode_m4a(afconvert, src, dst):
             size = os.path.getsize(dst)
             total_before += before
             total_after += size

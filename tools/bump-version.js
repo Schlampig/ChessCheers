@@ -41,12 +41,8 @@ function readVersion() {
     return m ? m[1] : null;
 }
 
-function main() {
-    var next = process.argv[2] || stamp();
-    var prev = readVersion();
-    if (prev === next) next = next + 'a';
+function bumpHtml(next) {
     var changed = 0;
-
     HTML_FILES.forEach(function (rel) {
         var file = path.join(ROOT, rel);
         if (!fs.existsSync(file)) return;
@@ -58,7 +54,11 @@ function main() {
             console.log('  更新 ' + rel);
         }
     });
+    return changed;
+}
 
+function bumpJs(next) {
+    var changed = 0;
     JS_FILES.forEach(function (rel) {
         var file = path.join(ROOT, rel);
         if (!fs.existsSync(file)) return;
@@ -70,7 +70,15 @@ function main() {
             console.log('  更新 ' + rel);
         }
     });
+    return changed;
+}
 
+function main() {
+    var next = process.argv[2] || stamp();
+    var prev = readVersion();
+    if (prev === next) next = next + 'a';
+
+    var changed = bumpHtml(next) + bumpJs(next);
     console.log('[bump-version] ' + (prev || '(无)') + ' -> ' + next + '，共更新 ' + changed + ' 个文件');
 }
 

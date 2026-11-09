@@ -5,7 +5,7 @@
  */
 var CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 var PORT = 9223;
-var BASE = 'http://127.0.0.1:8766';
+var BASE = process.env.CC_BASE || 'http://127.0.0.1:8766';
 var INDEX = BASE + '/code/html/index.html';
 
 var logs = [];

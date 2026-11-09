@@ -47,9 +47,12 @@ This file provides guidance to agent（LLM） when working with code in this rep
   - `stockfish-engine.js` - Stockfish 引擎封装
   - `index.js`/`game.js`/`result.js`/`about.js` - 对应4个页面的逻辑
 - `code/test/` - CDP自动化脚本
-- `data/chessboard/` - 棋盘素材（PNG）
+- `data/chessboard/` - 棋盘素材（图片，须为 1:1；`-mini` 为首页预览缩略图）
 - `data/chesspiece/` - 阵营素材，每个阵营包含King/Queen/Bishop/Knight/Rook/Pawn文件夹
-- `doc/` - 项目文档（PRD.md、intro文档）
+- `data/chesslogo/` - 项目logo（原图与各档尺寸，供页面与favicon使用）
+- `data/others/` - 文档配图
+- `doc/` - 项目文档（PRD、使用指南、README英文版、intro文档）
+- `tools/` - 本地服务与素材工具（serve / scan-assets / optimize-assets / make-posters / bump-version）
 
 ### 页面流程
 1. 首页 → 配置 → 对弈页面
@@ -58,15 +61,19 @@ This file provides guidance to agent（LLM） when working with code in this rep
 
 ## 关键配置与常量
 
-### ELO难度映射（Stockfish搜索深度）
-| ELO | 难度名称 | 搜索深度 |
-|-----|----------|----------|
-| <500 | 初生牛犊 | 5 |
-| 500-1000 | 灵机一动 | 8 |
-| 1100-1500 | 激流勇进 | 12 |
-| 1600-2000 | 福至心灵 | 15 |
-| 2100-2500 | 行云流水 | 18 |
-| 2600+ | 随心所欲/返璞归真 | 20 |
+### ELO难度映射（搜索深度与技能等级同步递增）
+| ELO | 难度名称 | 搜索深度 | 技能等级 |
+|-----|----------|----------|----------|
+| ≤500 | 初生牛犊 | 3 | 0 |
+| 600-1000 | 灵机一动 | 6 | 3 |
+| 1100-1500 | 激流勇进 | 9 | 6 |
+| 1600-2000 | 福至心灵 | 12 | 10 |
+| 2100-2500 | 行云流水 | 15 | 14 |
+| 2600-3000 | 随心所欲 | 18 | 18 |
+| ≥3000 | 返璞归真 | 20 | 20 |
+
+档位按「起始分下界」命中（`levelOf`），首页下拉的 value 即起始分；
+该构建不提供 UCI_Elo / UCI_LimitStrength，技能等级是唯一的强度开关。
 
 ### 棋子类型映射（PIECE_TYPE_MAP）
 - `'p'` → `'Pawn'` (兵)
@@ -88,11 +95,13 @@ This file provides guidance to agent（LLM） when working with code in this rep
 - `chess.moves({verbose: true})` - 获取详细走法列表
 
 ## 素材路径规范
-- 棋子视频：`data/chesspiece/{阵营}/{棋子类型}/{选中/落子/被吃}.webm`
-- 棋子音效：`data/chesspiece/{阵营}/{棋子类型}/{选中/落子/被吃}.wav`
-- 结算图片：`data/chesspiece/{阵营}/结算动画/{win/lose/draw}/{赢棋/输棋/和棋}.png`
-- 结算音效：`data/chesspiece/{阵营}/结算动画/{win/lose/draw}/{赢棋/输棋/和棋}.wav`
-- 棋盘：`data/chessboard/{棋盘名称}.png`
+- 棋子视觉：`data/chesspiece/{阵营}/{棋子类型}/{选中/落子/被吃}.{webm,gif,png,jpg,jpeg,webp}`
+- 棋子静止态预览：`data/chesspiece/{阵营}/{棋子类型}/预览.webp`（由 `tools/make-posters.js` 生成）
+- 棋子音效：`data/chesspiece/{阵营}/{棋子类型}/{选中/落子/被吃}.{wav,m4a,mp3,ogg}`
+- 结算图片：`data/chesspiece/{阵营}/结算动画/{win/lose/draw}/{赢棋/输棋/和棋}.webp`
+- 结算音效：`data/chesspiece/{阵营}/结算动画/{win/lose/draw}/{赢棋/输棋/和棋}.{wav,m4a}`
+- 棋盘：`data/chessboard/{棋盘名称}.webp`，另生成 `{棋盘名称}-mini.webp` 供首页预览
+- 以上路径均由 `tools/scan-assets.js` 扫描后写入 `code/js/assets.js`，代码中不硬编码素材名
 
 ## 代码组织模式
 1. 使用IIFE封装避免全局污染

@@ -2,7 +2,7 @@
 
 <a id="top"></a>
 
-<img src="../data/chesslogo/ChessCheers_logo-512.png" width="132" alt="ChessCheers logo">
+<img src="../data/chesslogo/ChessCheers_logo-256.png" width="132" alt="ChessCheers logo">
 
 # ChessCheers
 
@@ -32,7 +32,7 @@ ChessCheers is a chess application that runs in the browser, supporting **human 
 > For copyright ownership and usage restrictions, see [License and notices](#license). Please read it before using or distributing anything.
 
 <div align="center">
-<img src="../data/others/concept.png" width="760" alt="ChessCheers gameplay">
+<img src="../data/others/concept.webp" width="760" alt="ChessCheers gameplay">
 <br>
 <sub><strong>Note: concept preview only; the actual game looks slightly different.</strong></sub>
 </div>
@@ -54,7 +54,7 @@ Want to understand the gameplay and page structure first? See [User Guide · Com
 ## Quick start
 
 > **Running locally is recommended.** The web version is hosted on GitHub Pages, so the assets and
-> the AI engine (about 1 MB) are fetched over the network; access speed varies a lot. For a stable
+> the AI engine (about 0.6 MB) are fetched over the network; access speed varies a lot. For a stable
 > experience, use Option 1.
 
 ### Option 1: Run locally (recommended)

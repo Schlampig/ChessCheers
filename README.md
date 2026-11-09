@@ -2,7 +2,7 @@
 
 <a id="top"></a>
 
-<img src="data/chesslogo/ChessCheers_logo-512.png" width="132" alt="ChessCheers logo">
+<img src="data/chesslogo/ChessCheers_logo-256.png" width="132" alt="ChessCheers logo">
 
 # ChessCheers
 
@@ -32,7 +32,7 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，支持**人机对
 > 素材的版权归属与使用限制请见 [许可与声明](#license)。使用或分发前请务必阅读。
 
 <div align="center">
-<img src="data/others/concept.png" width="760" alt="ChessCheers 游戏画面">
+<img src="data/others/concept.webp" width="760" alt="ChessCheers 游戏画面">
 <br>
 <sub><strong>注意：概念预览图，真实效果略有不同。</strong></sub>
 </div>
@@ -53,7 +53,7 @@ ChessCheers 是一个跑在浏览器里的国际象棋应用，支持**人机对
 
 ## 快速开始
 
-> **推荐本地运行**。网页版架在 GitHub Pages 上，素材与 AI 引擎（约 1MB）全靠网络下载，
+> **推荐本地运行**。网页版架在 GitHub Pages 上，素材与 AI 引擎（约 0.6MB）全靠网络下载，
 > 国内访问速度波动较大；想稳定体验请用方式一。
 
 ### 方式一：本地启动（推荐）

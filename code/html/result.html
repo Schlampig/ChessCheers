@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<!--
+  ChessCheers — 结算页
+  结构：遮罩 → 结算卡片（结局色带 / 标题与小标题 / 三个操作按钮 / 阵营立绘）
+  依赖：css/result.css、js/assets.js、js/asset-loader.js、js/result.js
+  说明：结局数据优先取自 sessionStorage，URL 参数仅作兜底；无素材时退化为
+        紧凑灰底弹窗，按钮竖排，保证任何情况下都能重开或返回首页。
+-->
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -8,7 +15,7 @@
     <meta http-equiv="Expires" content="0">
     <title>ChessCheers - 结算</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='26'%3E%E2%99%9E%3C/text%3E%3C/svg%3E">
-    <link rel="stylesheet" href="../css/result.css?v=202611100036">
+    <link rel="stylesheet" href="../css/result.css?v=202611100131">
 </head>
 <body>
     <!-- 结算弹窗：点击按钮前不消失 -->
@@ -36,8 +43,8 @@
 
     <div class="toast" id="toast"></div>
 
-    <script src="../js/assets.js?v=202611100036"></script>
-    <script src="../js/asset-loader.js?v=202611100036"></script>
-    <script src="../js/result.js?v=202611100036"></script>
+    <script src="../js/assets.js?v=202611100131"></script>
+    <script src="../js/asset-loader.js?v=202611100131"></script>
+    <script src="../js/result.js?v=202611100131"></script>
 </body>
 </html>

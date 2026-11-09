@@ -218,7 +218,12 @@
             return true;
         }
 
-        var level = levelOf(elo);
+        requestAnalysis(fen, levelOf(elo), callback);
+        return true;
+    }
+
+    // 向引擎下发一次搜索：技能等级、局面与深度
+    function requestAnalysis(fen, level, callback) {
         currentSkill = level.skill;
         pendingMinThink = level.minThink;
         pendingStart = Date.now();
@@ -229,7 +234,6 @@
         }
         send('position fen ' + fen);
         send('go depth ' + level.depth);
-        return true;
     }
 
     function isReady() {

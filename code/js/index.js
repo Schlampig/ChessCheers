@@ -21,7 +21,7 @@
     var BOARDS_OK = true;
 
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202611100036';
+    var BUILD = '202611100131';
 
     var dom = {};
 
@@ -333,7 +333,7 @@
         if (!ready) showToast('素材不足，无法开局', 'warn');
 
         bindEvents();
-        console.log('[index] 初始化完成', { camps: randomCamps, boards: boardList.length });
+        console.log('[index] 初始化完成：' + boardList.length + ' 张棋盘');
     }
 
     if (document.readyState === 'loading') {

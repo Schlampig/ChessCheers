@@ -1,9 +1,9 @@
 /**
  * ChessCheers 素材清单（由 tools/scan-assets.js 自动生成，请勿手工编辑）
- * 生成时间: 2026-11-09T16:36:06.953Z
+ * 生成时间: 2026-11-09T17:31:49.588Z
  */
 window.CHESS_ASSETS = {
-  "generatedAt": "2026-11-09T16:36:06.953Z",
+  "generatedAt": "2026-11-09T17:31:49.588Z",
   "pieceRoot": "../../data/chesspiece/",
   "boardRoot": "../../data/chessboard/",
   "camps": [
