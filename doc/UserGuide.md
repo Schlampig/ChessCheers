@@ -67,8 +67,8 @@ node tools/serve.js
 
 浏览器会自动打开 <http://127.0.0.1:8766/>。
 
-> 当前稳定版本为 [v1.0.0](https://github.com/Schlampig/ChessCheers/releases/tag/v1.0.0)。
-> 想固定版本可 `git checkout v1.0.0`；不用 git 时，从 Releases 页下载源码包解压即可运行。
+> 当前稳定版本为 [v1.0.1](https://github.com/Schlampig/ChessCheers/releases/latest)（Releases 页始终为最新版）。
+> 想固定版本可 `git checkout v1.0.1`；不用 git 时，从该页下载源码包解压即可运行。
 
 > ⚠️ **不要直接双击 `code/html/index.html`**。
 > `file://` 协议下浏览器会拦截 Web Worker，AI 引擎起不来，你将只能看到棋盘而不能和机器对弈。

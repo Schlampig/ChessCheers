@@ -22,7 +22,7 @@
     var DRAG_THRESHOLD = 4;          // 拖拽判定阈值（像素）
     var STORAGE_KEY = 'chesscheers_last_game';
     // 与 HTML 中静态资源版本号保持一致；跳转时携带，强制浏览器拉取最新页面
-    var BUILD = '202611100131';
+    var BUILD = '202611101655';
 
     // ---------- 运行时状态 ----------
     var state = {

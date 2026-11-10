@@ -7,6 +7,9 @@
   3. 音频：*.wav → 同名 .m4a（AAC 40k 单声道，需要 macOS 的 afconvert）
 转换成功后才删除原文件；原始素材请事先自行备份。
 
+音频采用三级处理：先直转；遇到 24-bit 或高采样率源（AAC 编码器不接受）时，
+先降为 16-bit / 32kHz 单声道再编码；两者都失败则保留原 wav 并列出原因。
+
 为什么需要：GitHub Pages 的出口带宽有限，原始素材总量 130MB+，
 其中单张棋盘 4.9MB、单张结算图 8MB、棋子语音未压缩。
 转成 webp/m4a 后总量降到十分之一左右，页面才可能在弱网下打开。
@@ -21,6 +24,7 @@ import glob
 import shutil
 import subprocess
 import sys
+import tempfile
 
 try:
     from PIL import Image
@@ -109,17 +113,43 @@ def convert_results():
     print('  小计：%s → %s\n' % (human(total_before), human(total_after)))
 
 
-def encode_m4a(afconvert, src, dst):
-    """优先转单声道；个别素材不接受声道参数时退回原声道，避免整条转换失败。"""
-    base = [afconvert, '-f', 'm4af', '-d', 'aac', '-b', str(AUDIO_BITRATE)]
-    for extra in (['-c', '1'], []):
+def run_afconvert(afconvert, args):
+    """调用 afconvert，保留 stderr 供失败时说明原因。"""
+    return subprocess.run([afconvert] + args, check=False,
+                          stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+
+
+def is_usable(path):
+    """产物存在且不是空壳：40k AAC 即使 0.5 秒也有数 KB。"""
+    return os.path.exists(path) and os.path.getsize(path) > 1024
+
+
+def encode_m4a(afconvert, src, dst, tmp):
+    """三级转换，返回 (是否成功, 说明)。
+
+    1. 直转：适配多数 16-bit PCM 源；
+    2. 中转：24-bit / 48kHz 源会被 AAC 编码器拒绝（!dat），
+       先降为 16-bit / 32kHz 单声道再编码；
+    3. 兜底：删除半成品、保留原 wav，由调用方报告原因。
+    """
+    r1 = run_afconvert(afconvert, ['-f', 'm4af', '-d', 'aac', '-b', str(AUDIO_BITRATE),
+                                   '-c', '1', src, dst])
+    if r1.returncode == 0 and is_usable(dst):
+        return True, '直转'
+
+    r2 = run_afconvert(afconvert, ['-f', 'WAVE', '-d', 'LEI16@32000', '-c', '1', src, tmp])
+    if r2.returncode == 0:
         if os.path.exists(dst):
             os.remove(dst)
-        subprocess.run(base + extra + [src, dst], check=False,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if os.path.exists(dst) and os.path.getsize(dst) > 0:
-            return True
-    return False
+        r3 = run_afconvert(afconvert, ['-f', 'm4af', '-d', 'aac', '-b', str(AUDIO_BITRATE),
+                                       '-c', '1', tmp, dst])
+        if r3.returncode == 0 and is_usable(dst):
+            return True, '16-bit 中转'
+
+    if os.path.exists(dst):
+        os.remove(dst)
+    detail = (r1.stderr or r2.stderr or '').strip().splitlines()
+    return False, detail[0] if detail else '未知错误'
 
 
 def convert_audio():
@@ -129,21 +159,40 @@ def convert_audio():
         print('  未找到 afconvert（非 macOS），跳过音频转换\n')
         return
     total_before = total_after = 0
+    failed = []
+    tmp = os.path.join(tempfile.gettempdir(), 'cc-audio-16bit.wav')
+
     for src in sorted(glob.glob(os.path.join(PIECE_DIR, '**', '*.wav'), recursive=True)):
+        rel = os.path.relpath(src, PIECE_DIR)
         dst = os.path.splitext(src)[0] + '.m4a'
         before = os.path.getsize(src)
         if DRY:
-            print('  %-52s %8s → (dry)' % (os.path.relpath(src, PIECE_DIR), human(before)))
+            print('  %-52s %8s → (dry)' % (rel, human(before)))
             continue
-        if encode_m4a(afconvert, src, dst):
-            size = os.path.getsize(dst)
-            total_before += before
-            total_after += size
-            print('  %-52s %8s → %7s' % (os.path.relpath(src, PIECE_DIR), human(before), human(size)))
-            os.remove(src)
-        else:
-            print('  ⚠️ %s 转换失败，保留原文件' % os.path.relpath(src, PIECE_DIR))
+
+        ok, how = encode_m4a(afconvert, src, dst, tmp)
+        if not ok:
+            failed.append((rel, how))
+            print('  ⚠️ %-46s 转换失败，保留原文件' % rel)
+            print('     原因：%s' % how)
+            continue
+
+        size = os.path.getsize(dst)
+        total_before += before
+        total_after += size
+        note = '' if how == '直转' else '（%s）' % how
+        print('  %-46s %8s → %7s%s' % (rel, human(before), human(size), note))
+        os.remove(src)
+
+    if os.path.exists(tmp):
+        os.remove(tmp)
+
     print('  小计：%s → %s\n' % (human(total_before), human(total_after)))
+    if failed:
+        print('  有 %d 个音频未能转换，已保留原文件：' % len(failed))
+        for rel, why in failed:
+            print('    - %s：%s' % (rel, why))
+        print('  请检查源文件是否损坏，或手动转成 40k AAC 单声道后重跑。\n')
 
 
 if __name__ == '__main__':

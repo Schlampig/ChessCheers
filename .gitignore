@@ -19,6 +19,7 @@ desktop.ini
 
 # ---------- 依赖 ----------
 node_modules/
+__pycache__/
 package-lock.json
 
 # ---------- 内部开发资料 ----------

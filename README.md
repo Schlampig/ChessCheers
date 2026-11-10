@@ -67,7 +67,7 @@ cd ChessCheers
 node tools/serve.js          # 默认 http://127.0.0.1:8766/
 ```
 
-当前稳定版本为 [v1.0.0](https://github.com/Schlampig/ChessCheers/releases/tag/v1.0.0)。想固定在该版本，可在克隆后执行 `git checkout v1.0.0`；不用 git 时，也可以从 Releases 页下载源码包，解压后直接运行。
+当前稳定版本为 [v1.0.1](https://github.com/Schlampig/ChessCheers/releases/latest)（Releases 页始终提供最新版）。想固定在该版本，可在克隆后执行 `git checkout v1.0.1`；不用 git 时，也可以从该页下载源码包，解压后直接运行。
 
 启动时会自动扫描 `data/` 下的素材、校验规范并生成清单，终端会打印每个阵营与棋盘是否合格。
 

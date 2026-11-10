@@ -68,7 +68,7 @@ cd ChessCheers
 node tools/serve.js          # defaults to http://127.0.0.1:8766/
 ```
 
-The current stable version is [v1.0.0](https://github.com/Schlampig/ChessCheers/releases/tag/v1.0.0). To pin it, run `git checkout v1.0.0` after cloning; without git, download the source archive from the Releases page and run it directly.
+The current stable version is [v1.0.1](https://github.com/Schlampig/ChessCheers/releases/latest) (the Releases page always has the newest build). To pin it, run `git checkout v1.0.1` after cloning; without git, download the source archive from that page and run it directly.
 
 On start-up it scans `data/`, validates the assets and regenerates the manifest; the terminal prints whether each faction and board passed.
 

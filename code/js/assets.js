@@ -1,9 +1,9 @@
 /**
  * ChessCheers 素材清单（由 tools/scan-assets.js 自动生成，请勿手工编辑）
- * 生成时间: 2026-11-09T17:31:49.588Z
+ * 生成时间: 2026-11-10T08:55:21.906Z
  */
 window.CHESS_ASSETS = {
-  "generatedAt": "2026-11-09T17:31:49.588Z",
+  "generatedAt": "2026-11-10T08:55:21.906Z",
   "pieceRoot": "../../data/chesspiece/",
   "boardRoot": "../../data/chessboard/",
   "camps": [
@@ -341,7 +341,7 @@ window.CHESS_ASSETS = {
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "选中.m4a",
+            "audio": "落子.m4a",
             "poster": "预览.webp"
           },
           "capture": {
@@ -352,7 +352,7 @@ window.CHESS_ASSETS = {
           "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
-          "audioCount": 2
+          "audioCount": 3
         },
         "Bishop": {
           "select": {
@@ -362,7 +362,7 @@ window.CHESS_ASSETS = {
           },
           "drop": {
             "video": "落子.webm",
-            "audio": "选中.m4a",
+            "audio": "落子.m4a",
             "poster": "预览.webp"
           },
           "capture": {
@@ -373,7 +373,7 @@ window.CHESS_ASSETS = {
           "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
-          "audioCount": 2
+          "audioCount": 3
         },
         "Knight": {
           "select": {
@@ -420,23 +420,23 @@ window.CHESS_ASSETS = {
         "Pawn": {
           "select": {
             "video": "选中.webm",
-            "audio": null,
+            "audio": "选中.m4a",
             "poster": "预览.webp"
           },
           "drop": {
             "video": "落子.webm",
-            "audio": null,
+            "audio": "落子.m4a",
             "poster": "预览.webp"
           },
           "capture": {
             "video": "被吃.webm",
-            "audio": null,
+            "audio": "被吃.m4a",
             "poster": "预览.webp"
           },
           "poster": "预览.webp",
           "hasAssets": true,
           "videoCount": 3,
-          "audioCount": 0
+          "audioCount": 3
         }
       },
       "result": {
