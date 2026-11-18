@@ -1,9 +1,9 @@
 /**
  * ChessCheers 素材清单（由 tools/scan-assets.js 自动生成，请勿手工编辑）
- * 生成时间: 2026-11-10T08:55:21.906Z
+ * 生成时间: 2026-11-18T16:26:46.096Z
  */
 window.CHESS_ASSETS = {
-  "generatedAt": "2026-11-10T08:55:21.906Z",
+  "generatedAt": "2026-11-18T16:26:46.096Z",
   "pieceRoot": "../../data/chesspiece/",
   "boardRoot": "../../data/chessboard/",
   "camps": [
@@ -302,6 +302,304 @@ window.CHESS_ASSETS = {
         "draw": {
           "image": "和棋.webp",
           "audio": "和棋.m4a"
+        }
+      }
+    },
+    {
+      "name": "猪猪熊_冰淇淋",
+      "intro": "ChessCheers自带的白棋阵营，以制作者猪猪熊的造型基于大模型生成的棋子，没有复杂的动画和音效，提升游玩流畅度，为单纯想对弈的用户准备。搭配巧克力猪猪熊阵营对战效果更佳！",
+      "valid": true,
+      "missing": [],
+      "reasons": [],
+      "pieces": {
+        "King": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Queen": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Bishop": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Knight": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Rook": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Pawn": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        }
+      },
+      "result": {
+        "win": {
+          "image": "赢棋.webp",
+          "audio": null
+        },
+        "lose": {
+          "image": "输棋.webp",
+          "audio": null
+        },
+        "draw": {
+          "image": "和棋.webp",
+          "audio": null
+        }
+      }
+    },
+    {
+      "name": "猪猪熊_巧克力",
+      "intro": "ChessCheers自带的黑棋阵营，以制作者猪猪熊的造型基于大模型生成的棋子，没有复杂的动画和音效，提升游玩流畅度，为单纯想对弈的用户准备。搭配冰淇淋猪猪熊阵营对战效果更佳！",
+      "valid": true,
+      "missing": [],
+      "reasons": [],
+      "pieces": {
+        "King": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Queen": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Bishop": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Knight": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Rook": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        },
+        "Pawn": {
+          "select": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "drop": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "capture": {
+            "video": "选中.webp",
+            "audio": null,
+            "poster": "预览.webp"
+          },
+          "poster": "预览.webp",
+          "hasAssets": true,
+          "videoCount": 1,
+          "audioCount": 0
+        }
+      },
+      "result": {
+        "win": {
+          "image": "赢棋.webp",
+          "audio": null
+        },
+        "lose": {
+          "image": "输棋.webp",
+          "audio": null
+        },
+        "draw": {
+          "image": "和棋.webp",
+          "audio": null
         }
       }
     },

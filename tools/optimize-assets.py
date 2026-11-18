@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """ChessCheers 素材瘦身工具
 
-做三件事（只处理 data/ 下的素材，不动代码）：
+做四件事（只处理 data/ 下的素材，不动代码）：
   1. 棋盘：<名字>.png|jpg → <名字>.webp（长边 1024）+ <名字>-mini.webp（长边 480，首页预览用）
   2. 结算图：结算动画/<结局>/<图>.png → 同名 .webp（长边 1600）
-  3. 音频：*.wav → 同名 .m4a（AAC 40k 单声道，需要 macOS 的 afconvert）
+  3. 棋子静图：<阵营>/<棋子>/*.png|jpg → 同名 .webp（长边 512），并生成 预览.webp（192px）
+     无透明通道且四边接近纯白时自动去底，避免棋子带上白方块
+  4. 音频：*.wav → 同名 .m4a（AAC 40k 单声道，需要 macOS 的 afconvert）
 转换成功后才删除原文件；原始素材请事先自行备份。
 
 音频采用三级处理：先直转；遇到 24-bit 或高采样率源（AAC 编码器不接受）时，
@@ -25,6 +27,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from collections import deque
 
 try:
     from PIL import Image
@@ -43,7 +46,13 @@ BOARD_Q = 84
 BOARD_MINI_Q = 80
 RESULT_MAX = 1600
 RESULT_Q = 84
+PIECE_MAX = 512
+PIECE_Q = 90
+POSTER_SIZE = 192
 AUDIO_BITRATE = 40000
+
+PIECE_DIRS = ['King', 'Queen', 'Bishop', 'Knight', 'Rook', 'Pawn']
+IMAGE_EXT = ('.png', '.jpg', '.jpeg')
 
 DRY = '--dry-run' in sys.argv
 
@@ -111,6 +120,142 @@ def convert_results():
         if not DRY:
             os.remove(src)
     print('  小计：%s → %s\n' % (human(total_before), human(total_after)))
+
+
+def near_white(pixel, threshold=240):
+    r, g, b = pixel[0], pixel[1], pixel[2]
+    return r >= threshold and g >= threshold and b >= threshold
+
+
+def border_is_white(im, ratio=0.9, threshold=240):
+    """四边基本为纯白时视为「白底无透明」，需要去底。"""
+    w, h = im.size
+    px = im.load()
+    step = max(1, min(w, h) // 40)
+    total = hit = 0
+    for x in range(0, w, step):
+        for y in (0, h - 1):
+            total += 1
+            hit += 1 if near_white(px[x, y], threshold) else 0
+    for y in range(0, h, step):
+        for x in (0, w - 1):
+            total += 1
+            hit += 1 if near_white(px[x, y], threshold) else 0
+    return total > 0 and hit / float(total) >= ratio
+
+
+def remove_white_bg(im, threshold=240):
+    """从四边洪泛填充，只清除与边缘连通的白底，保留棋子内部的白色高光。"""
+    w, h = im.size
+    px = im.load()
+    visited = bytearray(w * h)
+    queue = deque()
+
+    for x in range(w):
+        for y in (0, h - 1):
+            if near_white(px[x, y], threshold):
+                visited[y * w + x] = 1
+                queue.append((x, y))
+    for y in range(h):
+        for x in (0, w - 1):
+            if not visited[y * w + x] and near_white(px[x, y], threshold):
+                visited[y * w + x] = 1
+                queue.append((x, y))
+
+    while queue:
+        x, y = queue.popleft()
+        px[x, y] = (0, 0, 0, 0)
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < w and 0 <= ny < h and not visited[ny * w + nx]:
+                if near_white(px[nx, ny], threshold):
+                    visited[ny * w + nx] = 1
+                    queue.append((nx, ny))
+    return im
+
+
+def save_piece(src, dst):
+    """静图棋子：必要时去白底，缩到长边 512 后存 webp，返回（体积, 是否去底）。"""
+    im = Image.open(src)
+    has_alpha = im.mode in ('RGBA', 'LA') or (im.mode == 'P' and 'transparency' in im.info)
+    im = im.convert('RGBA')
+    matted = False
+    if not has_alpha and border_is_white(im):
+        im = remove_white_bg(im)
+        matted = True
+
+    w, h = im.size
+    scale = min(1.0, float(PIECE_MAX) / max(w, h))
+    if scale < 1.0:
+        im = im.resize((max(1, int(w * scale)), max(1, int(h * scale))), Image.LANCZOS)
+
+    if DRY:
+        return 0, matted
+    if im.getchannel('A').getextrema()[0] == 255:
+        im = im.convert('RGB')
+    im.save(dst, 'WEBP', quality=PIECE_Q, method=6)
+    return os.path.getsize(dst), matted
+
+
+def save_poster(src, dst):
+    """棋子静止态预览图：长边 192，棋盘 32 个棋子合计不到 200KB。"""
+    im = Image.open(src).convert('RGBA')
+    w, h = im.size
+    scale = float(POSTER_SIZE) / max(w, h)
+    im = im.resize((max(1, int(w * scale)), max(1, int(h * scale))), Image.LANCZOS)
+    im.save(dst, 'WEBP', quality=88, method=6)
+
+
+def convert_piece_images():
+    print('=== 棋子静图 ===')
+    total_before = total_after = 0
+    count = 0
+
+    for camp in sorted(os.listdir(PIECE_DIR)):
+        camp_path = os.path.join(PIECE_DIR, camp)
+        if camp.startswith('.') or not os.path.isdir(camp_path):
+            continue
+        for piece in PIECE_DIRS:
+            piece_dir = os.path.join(camp_path, piece)
+            if not os.path.isdir(piece_dir):
+                continue
+            names = sorted(f for f in os.listdir(piece_dir) if f.lower().endswith(IMAGE_EXT))
+            if not names:
+                continue
+
+            converted = []
+            for name in names:
+                src = os.path.join(piece_dir, name)
+                dst = os.path.splitext(src)[0] + '.webp'
+                rel = os.path.relpath(src, PIECE_DIR)
+                before = os.path.getsize(src)
+                if DRY:
+                    print('  %-52s %8s → (dry)' % (rel, human(before)))
+                    count += 1
+                    continue
+
+                size, matted = save_piece(src, dst)
+                total_before += before
+                total_after += size
+                count += 1
+                print('  %-52s %8s → %6s%s' % (
+                    rel, human(before), human(size), '（去白底）' if matted else ''))
+                os.remove(src)
+                converted.append(dst)
+
+            # 预览图：优先「选中」，缺失则用第一张
+            poster = os.path.join(piece_dir, '预览.webp')
+            if converted and not DRY and not os.path.exists(poster):
+                pick = os.path.join(piece_dir, '选中.webp')
+                if not os.path.exists(pick):
+                    pick = converted[0]
+                save_poster(pick, poster)
+                total_after += os.path.getsize(poster)
+
+    if count:
+        print('  小计：%s → %s（含预览图）\n' % (human(total_before), human(total_after)))
+    else:
+        print('  无需处理的静图\n')
 
 
 def run_afconvert(afconvert, args):
@@ -199,5 +344,6 @@ if __name__ == '__main__':
     print('素材目录：%s%s\n' % (DATA, '（dry-run 模式，不写文件）' if DRY else ''))
     convert_boards()
     convert_results()
+    convert_piece_images()
     convert_audio()
     print('完成。请接着执行：node tools/scan-assets.js')

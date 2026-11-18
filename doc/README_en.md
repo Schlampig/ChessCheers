@@ -41,7 +41,7 @@ Want to understand the gameplay and page structure first? See [User Guide · Com
 
 ## Features
 
-- ♟ **Custom factions** — every piece has select / move / capture animations and voice lines
+- ♟ **Custom factions** — every piece has select / move / capture animations and voice lines, or just a single static image
 - 🎨 **Custom boards** — any 1:1 image works; swap the assets and the whole look changes
 - 🎬 **Animated pieces** — pieces slide from square to square; captures, castling, en passant and promotion each have their own treatment
 - 🤖 **Seven AI tiers** — from below 500 to above 3000, mapped to different search depths and thinking times
@@ -68,7 +68,7 @@ cd ChessCheers
 node tools/serve.js          # defaults to http://127.0.0.1:8766/
 ```
 
-The current stable version is [v1.0.1](https://github.com/Schlampig/ChessCheers/releases/latest) (the Releases page always has the newest build). To pin it, run `git checkout v1.0.1` after cloning; without git, download the source archive from that page and run it directly.
+The current stable version is [v1.1.0](https://github.com/Schlampig/ChessCheers/releases/latest) (the Releases page always has the newest build). To pin it, run `git checkout v1.1.0` after cloning; without git, download the source archive from that page and run it directly.
 
 On start-up it scans `data/`, validates the assets and regenerates the manifest; the terminal prints whether each faction and board passed.
 
@@ -98,6 +98,8 @@ More detail in [User Guide · How to open it](UserGuide_en.md#common-open).
 **Boards**: drop a 1:1 `png`/`jpg`/`jpeg`/`webp` into `data/chessboard/`. The filename becomes the display name.
 
 **Factions**: create a folder under `data/chesspiece/` containing six subfolders — `King`, `Queen`, `Bishop`, `Knight`, `Rook`, `Pawn` — each with `选中` / `落子` / `被吃` assets (webm/gif/png/jpg/webp; audio optional).
+
+All three states may share the same image and skip audio entirely, which makes a **static faction**: no animation, fastest to load, ideal when you just want to play quietly. The bundled "猪猪熊_冰淇淋" and "猪猪熊_巧克力" factions are built this way and can serve as references.
 
 **Restart the server and it takes effect.** Invalid assets never appear in the dropdown; the terminal and the home page explain why.
 

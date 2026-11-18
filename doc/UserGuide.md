@@ -67,8 +67,8 @@ node tools/serve.js
 
 浏览器会自动打开 <http://127.0.0.1:8766/>。
 
-> 当前稳定版本为 [v1.0.1](https://github.com/Schlampig/ChessCheers/releases/latest)（Releases 页始终为最新版）。
-> 想固定版本可 `git checkout v1.0.1`；不用 git 时，从该页下载源码包解压即可运行。
+> 当前稳定版本为 [v1.1.0](https://github.com/Schlampig/ChessCheers/releases/latest)（Releases 页始终为最新版）。
+> 想固定版本可 `git checkout v1.1.0`；不用 git 时，从该页下载源码包解压即可运行。
 
 > ⚠️ **不要直接双击 `code/html/index.html`**。
 > `file://` 协议下浏览器会拦截 Web Worker，AI 引擎起不来，你将只能看到棋盘而不能和机器对弈。
@@ -425,6 +425,11 @@ data/chesspiece/<阵营名>/
 
 **合格判定**：六个棋子目录齐全，且每个至少有一张视觉素材。
 不满足的阵营不会进入下拉，终端与首页会给缺失清单。
+
+**纯图片阵营**：三个状态共用同一张图、不配语音也是合法阵营——只放 `选中.webp`，
+再用同名图片复制成 `预览.webp` 即可（后者建议缩到 192px）。棋盘上不做任何动画，
+首屏只加载十几张几 KB 的小图，是加载最快的一种做法。`data/chesspiece/猪猪熊_冰淇淋`
+与 `猪猪熊_巧克力` 即按此制作。
 
 **状态映射**（`scan-assets.js` 的 `mapStates`）：
 

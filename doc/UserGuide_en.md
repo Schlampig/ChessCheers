@@ -68,8 +68,8 @@ node tools/serve.js
 
 Your browser will open <http://127.0.0.1:8766/> automatically.
 
-> The current stable version is [v1.0.1](https://github.com/Schlampig/ChessCheers/releases/latest) (the Releases page always has the newest build).
-> To pin it, run `git checkout v1.0.1`; without git, download the source archive from that page and run it.
+> The current stable version is [v1.1.0](https://github.com/Schlampig/ChessCheers/releases/latest) (the Releases page always has the newest build).
+> To pin it, run `git checkout v1.1.0`; without git, download the source archive from that page and run it.
 
 > ⚠️ **Do not double-click `code/html/index.html`.**
 > Under the `file://` protocol, browsers block Web Workers, so the AI engine cannot start — you will see the board but cannot play against the machine.
@@ -424,6 +424,11 @@ data/chesspiece/<faction>/
 
 **Valid means**: all six piece folders exist and each contains at least one visual asset.
 Factions that fail do not appear in the dropdown; the terminal and the home page list what is missing.
+
+**Static factions**: sharing one image across all three states and shipping no audio is also valid —
+keep only `选中.webp`, then copy it to `预览.webp` (ideally resized to 192px). Nothing animates on the
+board, the first load is just a dozen or so small images, and it is the fastest option available.
+The bundled `data/chesspiece/猪猪熊_冰淇淋` and `猪猪熊_巧克力` factions are built this way.
 
 **State mapping** (`mapStates` in `scan-assets.js`):
 
